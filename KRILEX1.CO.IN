@@ -20,9 +20,9 @@ st.markdown("""
 
 
 # Exact Local Desktop Asset Destination Path Configuration
-BASE_PATH = r"C:\Users\hp\Desktop\photo_6244332980792922580_y"
+LOGO_FILENAME ="photo_6244332980792922580_y"
 
-def load_desktop_logo(base_path):
+def load_server_logo(filename):
     extensions = [".jpg", ".jpeg", ".png", ".JPG", ".PNG"]
     for ext in extensions:
         full_path = base_path + ext
@@ -36,7 +36,7 @@ def load_desktop_logo(base_path):
                 return ""
     return ""
 
-LOGO_BASE64 = load_desktop_logo(BASE_PATH)
+LOGO_BASE64 = load_server_logo(LOGO_FILENAME)
 
 # Global Session State System Tracking Initializations
 if "page" not in st.session_state: st.session_state.page = "main"
