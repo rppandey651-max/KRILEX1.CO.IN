@@ -49,14 +49,6 @@ def load_server_logo(filename):
 # Logo load karein aur display karein
 logo_base64 = load_server_logo(LOGO_FILENAME)
 
-if logo_base64:
-    st.markdown(
-        f'<div style="text-align: center;"><img src="{logo_base64}" width="300"></div>', 
-        unsafe_allow_html=True
-    )
-else:
-    st.markdown("<h1 style='text-align: center; color: #007BFF;'>KRILEX Legal Tech</h1>", unsafe_allow_html=True)
-
 # Global Session State System Tracking Initializations
 if "page" not in st.session_state: st.session_state.page = "main"
 if "logged_in" not in st.session_state: st.session_state.logged_in = False
