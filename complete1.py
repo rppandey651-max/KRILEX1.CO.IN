@@ -205,7 +205,7 @@ elif not st.session_state.logged_in:
 
     elif st.session_state.page == "login":
         if logo_base64: 
-            st.markdown(f'<div class="center-logo-container"><img src="{LOGO_BASE64}" width="140"></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="center-logo-container"><img src="{logo_base64}" width="140"></div>', unsafe_allow_html=True)
         st.markdown("### 🔐 User Login")
         
         if not st.session_state.login_otp_dispatched:
