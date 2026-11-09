@@ -177,7 +177,7 @@ elif not st.session_state.logged_in:
     
     if st.session_state.page == "main":
         if logo_base64: 
-            st.markdown(f'<div class="center-logo-container"><img src="{LOGO_BASE64}" width="160"></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="center-logo-container"><img src="{logo_base64}" width="160"></div>', unsafe_allow_html=True)
         st.markdown("<h1 style='text-align: center; color: #1e3a8a;'>KRILEX Legal Tech Innovation</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #334155;'>Welcome to the Digital Legal Petition Generator.</p>", unsafe_allow_html=True)
         st.markdown("---")
