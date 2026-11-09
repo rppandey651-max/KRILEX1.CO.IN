@@ -87,7 +87,7 @@ watermark_css = ""
 if logo_base64 and elapsed_time >= 2.5:
     watermark_css = f"""
     .stApp {{
-        background-image: url("{LOGO_BASE64}") !important;
+        background-image: url("{logo_base64}") !important;
         background-repeat: no-repeat !important;
         background-position: center 65% !important;
         background-size: 35% !important;
