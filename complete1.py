@@ -785,31 +785,56 @@ else:
                     if st.button("➕ Add Respondent Entity", key="add_r_btn", use_container_width=True): 
                         st.session_state.r_count += 1; st.rerun()
                 # 🎯 NEW SECTION: Caveator Advocate Professional Profile Registration Box
+                # 🎯 NEW OPTION: Dynamic Extra Counsel / Advocate Stack
                 st.markdown("<br>", unsafe_allow_html=True)
-                st.markdown("##### ⚖️ Retained Caveator Advocate / Counsel Profile")
+                st.markdown("##### ⚖️ Retained Caveator Advocate / Counsel Profile Stack")
                 
-                # Reading existing persistent states safely if user returns to editor
-                adv_name_mapped = st.session_state.get("persist_adv_name", "").upper()
-                adv_roll_mapped = st.session_state.get("persist_adv_roll", "").upper()
-                adv_cham_mapped = st.session_state.get("persist_adv_chamber", "").upper()
-                adv_phone_mapped = st.session_state.get("persist_adv_phone", "")
+                # Initialize counsel counter tracking state safely at the top if not set
+                if "counsel_count" not in st.session_state: 
+                    st.session_state.counsel_count = 1
+                
+                adv_names_list = []
+                adv_rolls_list = []
+                adv_chambers_list = []
+                adv_phones_list = []
 
                 with st.container(border=True):
-                    adv_col1, adv_col2 = st.columns(2)
-                    with adv_col1:
-                        # Automatically defaults to the logged-in user's name
-                        default_adv_name = f"ADV. {st.session_state.username.upper()}"
-                        adv_name_val = st.text_input("Advocate Full Name", placeholder="e.g. ADV. NAMAN PANDEY", value=adv_name_mapped if adv_name_mapped else default_adv_name, key="f_adv_name").upper()
-                        adv_roll_val = st.text_input("Advocate Registration Roll No. (Bar Council)", placeholder="e.g. UP/12345/2026", value=adv_roll_mapped, key="f_adv_roll").upper()
-                    with adv_col2:
-                        adv_chamber_val = st.text_input("Chamber Room / Office Number", placeholder="e.g. CHAMBER NO. 45, HIGH COURT", value=adv_cham_mapped, key="f_adv_chamber").upper()
-                        adv_phone_val = st.text_input("Advocate Active Mobile Number", max_chars=10, placeholder="e.g. 9876543210", value=adv_phone_mapped, key="f_adv_phone").strip()
+                    for i in range(st.session_state.counsel_count):
+                        st.markdown(f"**🔹 Counsel / Advocate No. {i+1}**")
+                        
+                        # Retaining filled data safely if screen refreshes
+                        mapped_name = st.session_state.get(f"persist_adv_name_{i}", "")
+                        mapped_roll = st.session_state.get(f"persist_adv_roll_{i}", "")
+                        mapped_cham = st.session_state.get(f"persist_adv_chamber_{i}", "")
+                        mapped_phone = st.session_state.get(f"persist_adv_phone_{i}", "")
+                        
+                        # Automatically default the first field to logged-in user name
+                        default_name = f"ADV. {st.session_state.username.upper()}" if i == 0 else ""
+                        
+                        adv_col1, adv_col2 = st.columns(2)
+                        with adv_col1:
+                            adv_name_val = st.text_input(f"Advocate No. {i+1} Full Name", placeholder="e.g. ADV. NAMAN PANDEY", value=mapped_name if mapped_name else default_name, key=f"f_adv_name_{i}").upper()
+                            adv_roll_val = st.text_input(f"Advocate No. {i+1} Roll No.", placeholder="e.g. UP/12345/2026", value=mapped_roll, key=f"f_adv_roll_{i}").upper()
+                        with adv_col2:
+                            adv_chamber_val = st.text_input(f"Chamber / Office Room No.", placeholder="e.g. CHAMBER NO. 45", value=mapped_cham, key=f"f_adv_chamber_{i}").upper()
+                            adv_phone_val = st.text_input(f"Advocate Mobile Number", max_chars=10, placeholder="e.g. 9876543210", value=mapped_phone, key=f"f_adv_phone_{i}").strip()
+                        
+                        if adv_name_val:
+                            adv_names_list.append(adv_name_val)
+                            st.session_state[f"persist_adv_name_{i}"] = adv_name_val
+                        if adv_roll_val: adv_rolls_list.append(adv_roll_val)
+                        if adv_chamber_val: adv_chambers_list.append(adv_chamber_val)
+                        if adv_phone_val: adv_phones_list.append(adv_phone_val)
+                        st.markdown("---")
+                    
+                    # 🎯 The functional button to append an extra advocate row instantly
+                    if st.button("➕ Add Extra Counsel / Advocate", key="add_extra_counsel_btn", use_container_width=True):
+                        st.session_state.counsel_count += 1
+                        st.rerun()
 
-                # Storing these values into temporary session state fields
-                st.session_state.persist_adv_name = adv_name_val
-                st.session_state.persist_adv_roll = adv_roll_val
-                st.session_state.persist_adv_chamber = adv_chamber_val
-                st.session_state.persist_adv_phone = adv_phone_val
+                # Joining all counsel metadata cleanly into a single state string for compile tracking
+                st.session_state.persist_adv_name = "\n".join(adv_names_list)
+
 
                 # --- FULL WIDTH: EDITABLE LEGAL PARAGRAPHS BLOCK ---
                 st.markdown("<br>", unsafe_allow_html=True)
@@ -851,10 +876,7 @@ else:
                         if active_form == "Caveat Application":
                             st.session_state.persist_c_name = caveator_name_only
                             st.session_state.persist_c_addr = caveator_address_only
-                            st.session_state.persist_adv_name = adv_name_val
-                            st.session_state.persist_adv_roll = adv_roll_val
-                            st.session_state.persist_adv_chamber = adv_chamber_val
-                            st.session_state.persist_adv_phone = adv_phone_val
+                            st.session_state.persist_adv_name = "\n".join(adv_names_list)
                             st.session_state.persist_exp_p_formatted = "\n".join([f"{idx+1}. {name}" for idx, name in enumerate(exp_p_names_list)])
                             st.session_state.persist_r_formatted = "\n".join([f"{idx+1}. {name}" for idx, name in enumerate(r_names_list)])
                         else:
