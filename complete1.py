@@ -84,7 +84,7 @@ if "footer_page" not in st.session_state: st.session_state.footer_page = None
 
 elapsed_time = time.time() - st.session_state.start_time
 watermark_css = ""
-if LOGO_BASE64 and elapsed_time >= 2.5:
+if logo_base64 and elapsed_time >= 2.5:
     watermark_css = f"""
     .stApp {{
         background-image: url("{LOGO_BASE64}") !important;
