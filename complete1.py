@@ -784,6 +784,32 @@ else:
                         if val: r_names_list.append(val)
                     if st.button("➕ Add Respondent Entity", key="add_r_btn", use_container_width=True): 
                         st.session_state.r_count += 1; st.rerun()
+                # 🎯 NEW SECTION: Caveator Advocate Professional Profile Registration Box
+                st.markdown("<br>", unsafe_allow_html=True)
+                st.markdown("##### ⚖️ Retained Caveator Advocate / Counsel Profile")
+                
+                # Reading existing persistent states safely if user returns to editor
+                adv_name_mapped = st.session_state.get("persist_adv_name", "").upper()
+                adv_roll_mapped = st.session_state.get("persist_adv_roll", "").upper()
+                adv_cham_mapped = st.session_state.get("persist_adv_chamber", "").upper()
+                adv_phone_mapped = st.session_state.get("persist_adv_phone", "")
+
+                with st.container(border=True):
+                    adv_col1, adv_col2 = st.columns(2)
+                    with adv_col1:
+                        # Automatically defaults to the logged-in user's name
+                        default_adv_name = f"ADV. {st.session_state.username.upper()}"
+                        adv_name_val = st.text_input("Advocate Full Name", placeholder="e.g. ADV. NAMAN PANDEY", value=adv_name_mapped if adv_name_mapped else default_adv_name, key="f_adv_name").upper()
+                        adv_roll_val = st.text_input("Advocate Registration Roll No. (Bar Council)", placeholder="e.g. UP/12345/2026", value=adv_roll_mapped, key="f_adv_roll").upper()
+                    with adv_col2:
+                        adv_chamber_val = st.text_input("Chamber Room / Office Number", placeholder="e.g. CHAMBER NO. 45, HIGH COURT", value=adv_cham_mapped, key="f_adv_chamber").upper()
+                        adv_phone_val = st.text_input("Advocate Active Mobile Number", max_chars=10, placeholder="e.g. 9876543210", value=adv_phone_mapped, key="f_adv_phone").strip()
+
+                # Storing these values into temporary session state fields
+                st.session_state.persist_adv_name = adv_name_val
+                st.session_state.persist_adv_roll = adv_roll_val
+                st.session_state.persist_adv_chamber = adv_chamber_val
+                st.session_state.persist_adv_phone = adv_phone_val
 
                 # --- FULL WIDTH: EDITABLE LEGAL PARAGRAPHS BLOCK ---
                 st.markdown("<br>", unsafe_allow_html=True)
@@ -823,8 +849,11 @@ else:
                         st.session_state.persist_order_date = formatted_order_date
                         st.session_state.persist_additional_paras = additional_paras_input
                         if active_form == "Caveat Application":
-                            st.session_state.persist_c_name = caveator_name_only
-                            st.session_state.persist_c_addr = caveator_address_only
+                        st.session_state.persist_adv_name = adv_name_val
+                        st.session_state.persist_adv_roll = adv_roll_val
+                        st.session_state.persist_adv_chamber = adv_chamber_val
+                        st.session_state.persist_adv_phone = adv_phone_val
+
                             st.session_state.persist_exp_p_formatted = "\n".join([f"{idx+1}. {name}" for idx, name in enumerate(exp_p_names_list)])
                             st.session_state.persist_r_formatted = "\n".join([f"{idx+1}. {name}" for idx, name in enumerate(r_names_list)])
                         else:
