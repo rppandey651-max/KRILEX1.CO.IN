@@ -166,7 +166,7 @@ if elapsed_time < 2.5:
     """, unsafe_allow_html=True)
     
     if logo_base64:
-        st.markdown(f'<div class="full-page-splash"><img src="{LOGO_BASE64}" class="big-splash-logo"></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="full-page-splash"><img src="{logo_base64}" class="big-splash-logo"></div>', unsafe_allow_html=True)
     else:
         st.markdown('<div class="full-page-splash"><h1 style="color:#0096ff; font-family:sans-serif; font-size:4rem;">KRILEX Legal Tech</h1></div>', unsafe_allow_html=True)
     
