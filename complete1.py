@@ -165,7 +165,7 @@ if elapsed_time < 2.5:
         </style>
     """, unsafe_allow_html=True)
     
-    if LOGO_BASE64:
+    if logo_base64:
         st.markdown(f'<div class="full-page-splash"><img src="{LOGO_BASE64}" class="big-splash-logo"></div>', unsafe_allow_html=True)
     else:
         st.markdown('<div class="full-page-splash"><h1 style="color:#0096ff; font-family:sans-serif; font-size:4rem;">KRILEX Legal Tech</h1></div>', unsafe_allow_html=True)
@@ -176,7 +176,7 @@ if elapsed_time < 2.5:
 elif not st.session_state.logged_in:
     
     if st.session_state.page == "main":
-        if LOGO_BASE64: 
+        if logo_base64: 
             st.markdown(f'<div class="center-logo-container"><img src="{LOGO_BASE64}" width="160"></div>', unsafe_allow_html=True)
         st.markdown("<h1 style='text-align: center; color: #1e3a8a;'>KRILEX Legal Tech Innovation</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; color: #334155;'>Welcome to the Digital Legal Petition Generator.</p>", unsafe_allow_html=True)
@@ -204,7 +204,7 @@ elif not st.session_state.logged_in:
             st.rerun()
 
     elif st.session_state.page == "login":
-        if LOGO_BASE64: 
+        if logo_base64: 
             st.markdown(f'<div class="center-logo-container"><img src="{LOGO_BASE64}" width="140"></div>', unsafe_allow_html=True)
         st.markdown("### 🔐 User Login")
         
@@ -324,7 +324,7 @@ elif not st.session_state.logged_in:
                 st.rerun()
 
     elif st.session_state.page == "register":
-        if LOGO_BASE64: 
+        if logo_base64: 
             st.markdown(f'<div class="center-logo-container"><img src="{LOGO_BASE64}" width="140"></div>', unsafe_allow_html=True)
         st.markdown("### 📝 New User Registration")
         if st.session_state.reg_success_msg:
