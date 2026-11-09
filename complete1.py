@@ -5,46 +5,58 @@ import os
 import base64
 import random
 
-# ====================================================
+# =======================================================
 # PART 1: GLOBAL SETUP, SESSION STATES & STYLESHEET
-# ====================================================
+# =======================================================
 
-# Page Configuration Setup - Set to 'centered' view layout model matching 1.py structure
+# 1. Page Configuration and Theme Override (Light Mode Setup)
 st.set_page_config(page_title="KRILEX Legal Tech Innovation", layout="centered")
+
+# CSS to force Light Mode and Hide Header Elements
 st.markdown("""
     <style>
+    /* Force Light Theme Colors */
+    .stApp {
+        background-color: #FFFFFF !important;
+        color: #31333F !important;
+    }
+    div[data-testid="stSidebar"] {
+        background-color: #F0F2F6 !important;
+    }
+    /* Hide Deploy Button and Header */
     .stAppDeployButton {display: none !important;}
     header {visibility: hidden;}
     </style>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-
-# Exact Local Desktop Asset Destination Path Configuration
-LOGO_FILENAME ="photo_6244332980792922580_y"
+# 2. Render Server Path Configuration for Logo
+LOGO_FILENAME = "photo_6244332980792922580_y"
 
 def load_server_logo(filename):
-    extensions = [".jpg", ".jpeg", ".png", ".JPG", ".PNG"]
+    extensions = [".png", ".jpg", ".jpeg", ".PNG", ".JPG", ".JPEG"]
     for ext in extensions:
-        full_path = base_path + ext
+        full_path = filename + ext
         if os.path.exists(full_path):
             try:
                 with open(full_path, "rb") as image_file:
                     encoded_string = base64.b64encode(image_file.read()).decode()
-                    mime_type = "png" if ext.lower() == ".png" else "jpeg"
-                    return f"data:image/{mime_type};base64,{encoded_string}"
+                    mime_type = "image/png" if "png" in ext.lower() else "image/jpeg"
+                    return f"data:{mime_type};base64,{encoded_string}"
             except Exception:
                 return ""
     return ""
 
-LOGO_BASE64 = load_server_logo(LOGO_FILENAME)
+# Logo load karein aur display karein
+logo_base64 = load_server_logo(LOGO_FILENAME)
 
 if logo_base64:
     st.markdown(
-        f'<div style= "text-align: center;"><img src="{logo_base64}" width="300"></div>',
-        unsafe_allow_html=true
+        f'<div style="text-align: center;"><img src="{logo_base64}" width="300"></div>', 
+        unsafe_allow_html=True
     )
 else:
     st.markdown("<h1 style='text-align: center; color: #007BFF;'>KRILEX Legal Tech</h1>", unsafe_allow_html=True)
+
 # Global Session State System Tracking Initializations
 if "page" not in st.session_state: st.session_state.page = "main"
 if "logged_in" not in st.session_state: st.session_state.logged_in = False
