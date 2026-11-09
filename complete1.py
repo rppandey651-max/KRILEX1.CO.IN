@@ -564,7 +564,7 @@ elif not st.session_state.logged_in:
 # Renders Internal Connected Workstation Panels ONLY if logged_in state is verified
 else:
     # Upper Action Ribbon Strip - Added a Back button next to System Home
-    h_col1, h_col2, h_col3 = st.columns()
+    h_col1, h_col2, h_col3 = st.columns(3)
 
     with h_col1:
         if st.button("🏠 System Home", key="global_home_btn", use_container_width=True):
