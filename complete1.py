@@ -849,16 +849,18 @@ else:
                         st.session_state.persist_order_date = formatted_order_date
                         st.session_state.persist_additional_paras = additional_paras_input
                         if active_form == "Caveat Application":
-                        st.session_state.persist_adv_name = adv_name_val
-                        st.session_state.persist_adv_roll = adv_roll_val
-                        st.session_state.persist_adv_chamber = adv_chamber_val
-                        st.session_state.persist_adv_phone = adv_phone_val
-
+                            st.session_state.persist_c_name = caveator_name_only
+                            st.session_state.persist_c_addr = caveator_address_only
+                            st.session_state.persist_adv_name = adv_name_val
+                            st.session_state.persist_adv_roll = adv_roll_val
+                            st.session_state.persist_adv_chamber = adv_chamber_val
+                            st.session_state.persist_adv_phone = adv_phone_val
                             st.session_state.persist_exp_p_formatted = "\n".join([f"{idx+1}. {name}" for idx, name in enumerate(exp_p_names_list)])
                             st.session_state.persist_r_formatted = "\n".join([f"{idx+1}. {name}" for idx, name in enumerate(r_names_list)])
                         else:
                             st.session_state.persist_p_formatted = "\n".join([f"{idx+1}. {name}" for idx, name in enumerate(p_names_list)])
                             st.session_state.persist_r_formatted = "\n".join([f"{idx+1}. {name}" for idx, name in enumerate(r_names_list)])
+
                         
                         st.session_state.canvas_sub_page = "preview"
                         st.rerun()
