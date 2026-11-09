@@ -325,7 +325,7 @@ elif not st.session_state.logged_in:
 
     elif st.session_state.page == "register":
         if logo_base64: 
-            st.markdown(f'<div class="center-logo-container"><img src="{LOGO_BASE64}" width="140"></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="center-logo-container"><img src="{logo_base64}" width="140"></div>', unsafe_allow_html=True)
         st.markdown("### 📝 New User Registration")
         if st.session_state.reg_success_msg:
             st.success(st.session_state.reg_success_msg)
