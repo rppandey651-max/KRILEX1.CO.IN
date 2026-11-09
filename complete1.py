@@ -563,18 +563,23 @@ elif not st.session_state.logged_in:
             st.rerun()
 # Renders Internal Connected Workstation Panels ONLY if logged_in state is verified
 else:
-    # Upper Action Ribbon Strip - Removed headers and KPI cards completely, keeping only essential buttons
-    h_col1, h_col2, h_col3 = st.columns([1, 2, 1])
+    # Upper Action Ribbon Strip - Added a Back button next to System Home
+    h_col1, h_col2, h_col3 = st.columns()
 
     with h_col1:
-        st.markdown('<div style="display: flex; flex-direction: column; gap: 8px;">', unsafe_allow_html=True)
         if st.button("🏠 System Home", key="global_home_btn", use_container_width=True):
             st.session_state.footer_page = None
             st.session_state.active_app_tile = None
             st.session_state.selected_court = "--- Choose Jurisdiction ---"
             st.session_state.canvas_sub_page = "editor"
             st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+
+    # 🎯 NEW: Widescreen Top Back Button Navigation Added Here
+    with h_col2:
+        if st.button("🔙 Back to Forum Hub", key="global_top_back_btn", use_container_width=True):
+            st.session_state.active_app_tile = None  # Drops active asset layer back to main choice matrix
+            st.session_state.canvas_sub_page = "editor"
+            st.rerun()
 
     with h_col3:
         with st.popover("👤 Profile Card", use_container_width=True):
@@ -583,6 +588,7 @@ else:
                 st.session_state.logged_in = False
                 st.session_state.page = "main"
                 st.rerun()
+
 
     st.markdown("---")
 
@@ -790,8 +796,17 @@ else:
                         height=180
                     )
 
+                # 🎯 NEW: Side-by-Side Action Grid for Compile and Cancel Toggles
                 st.markdown("<br>", unsafe_allow_html=True)
-                if st.button(f"✨ Compile Document & Generate Live Preview Page", type="primary", use_container_width=True):
+                form_action_col1, form_action_col2 = st.columns(2)
+                
+                with form_action_col1:
+                    submit_compile = st.button(f"✨ Compile Document & Generate Live Preview Page", type="primary", use_container_width=True)
+                
+                with form_action_col2:
+                    back_to_hub_lower = st.button("🔙 Cancel & Back to Forum Hub", key="lower_form_back_to_hub_btn", use_container_width=True)
+
+                if submit_compile:
                     if not district_val:
                         st.sidebar.warning("⚠️ Processing Denied: Missing Forum Jurisdiction District.")
                     elif active_form == "Caveat Application" and (not caveator_name_only or not caveator_address_only):
@@ -819,7 +834,11 @@ else:
                         st.session_state.canvas_sub_page = "preview"
                         st.rerun()
 
-
+                # Action handler logic for lower Cancel navigation trigger
+                if back_to_hub_lower:
+                    st.session_state.active_app_tile = None
+                    st.session_state.canvas_sub_page = "editor"
+                    st.rerun()
 
             # ====================================================
             # SUB-PAGE LAYER B: EXPANDED WIDESCREEN PREVIEW PAGE
