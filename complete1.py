@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import db2 as db  # Reads directly from your db2.py file
 import time
 import os
