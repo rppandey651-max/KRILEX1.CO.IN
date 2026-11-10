@@ -921,16 +921,23 @@ else:
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown("##### 📝 Additional Custom Legal Paragraphs / Grounds")
                 
-                # Setup proper custom state keys inside Streamlit to hold vocal inputs permanently
-                if "voice_input_buffer" not in st.session_state:
-                    st.session_state.voice_input_buffer = additional_paras_mapped
+                # Check for absolute voice inputs directly from live server query keys safely
+                if "voice_param_text" in st.query_params and st.query_params["voice_param_text"]:
+                    server_captured_text = st.query_params["voice_param_text"]
+                    # Instantly flush query strings matrix configuration to prevent infinity loops
+                    st.query_params["voice_param_text"] = ""
+                    
+                    if additional_paras_mapped and additional_paras_mapped.strip():
+                        additional_paras_mapped = additional_paras_mapped.strip() + " " + server_captured_text.strip()
+                    else:
+                        additional_paras_mapped = server_captured_text.strip()
+                    
+                    st.session_state.persist_additional_paras = additional_paras_mapped
+                    st.rerun()
 
                 with st.container(border=True):
-                    # 1. Native Custom Component that sends data via clean state bridge
-                    # Fixed structural indexing mapping to resolve strict Cross-Origin Block rules
-                    import streamlit.components.v1 as custom_bridge_components
-                    
-                    voice_component_code = """
+                    # 1. High Performance Render Iframe Compatible Speech Engine Box
+                    custom_speech_html = """
                     <div style="font-family: sans-serif; margin-bottom: 5px;">
                         <button id="mic-btn" style="
                             background-color: #f0f2f6; border: 1px solid #d3d3d3; 
@@ -943,7 +950,6 @@ else:
                     <script>
                         const btn = document.getElementById('mic-btn');
                         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                        
                         if (SpeechRecognition) {
                             const recognition = new SpeechRecognition();
                             recognition.continuous = false;
@@ -958,30 +964,13 @@ else:
                             });
 
                             recognition.onresult = (event) => {
+                                // FIXED: Access structural index tracking framework array data directly 
                                 const transcript = event.results[0][0].transcript;
                                 
-                                // Directly find the parent document's textarea array matrix safely
-                                const parentTextareas = window.parent.document.querySelectorAll('textarea');
-                                let targetFound = false;
-                                
-                                parentTextareas.forEach(textarea => {
-                                    if(textarea.value.includes("That the applicant") || textarea.value.includes("Applicant/Caveator")) {
-                                        textarea.value += (textarea.value ? " " : "") + transcript;
-                                        
-                                        // Dispatch native React input events so Streamlit captures changes forever
-                                        textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                                        textarea.dispatchEvent(new Event('change', { bubbles: true }));
-                                        textarea.focus();
-                                        targetFound = true;
-                                    }
-                                });
-                                
-                                // Alternative fallback: Inject into the first textarea found if strict string match misses
-                                if(!targetFound && parentTextareas.length > 0) {
-                                    parentTextareas[0].value += (parentTextareas[0].value ? " " : "") + transcript;
-                                    parentTextareas[0].dispatchEvent(new Event('input', { bubbles: true }));
-                                    parentTextareas[0].dispatchEvent(new Event('change', { bubbles: true }));
-                                }
+                                // Direct top window query parameter routing protocol handshake
+                                const targetUrl = new URL(window.parent.location.href);
+                                targetUrl.searchParams.set("voice_param_text", transcript);
+                                window.parent.location.href = targetUrl.toString();
                             };
                             
                             recognition.onspeechend = () => { resetBtn(); };
@@ -995,19 +984,18 @@ else:
                         }
                     </script>
                     """
-                    custom_bridge_components.html(voice_component_code, height=45)
+                    components.html(custom_speech_html, height=45)
                     
-                    # 2. Render standard Streamlit input field linked directly via internal key state
+                    # 2. Render the Standard Streamlit Input Field Box Linked to Verified State Engine
                     additional_paras_input = st.text_area(
                         "If you want to append or edit statement paragraphs, modify them directly below:",
                         key="f_additional_paras",
-                        value=st.session_state.voice_input_buffer,
+                        value=additional_paras_mapped,
                         height=180
                     )
                     
-                    # Update persist values safely when user types manually or inserts texts
-                    if additional_paras_input != st.session_state.voice_input_buffer:
-                        st.session_state.voice_input_buffer = additional_paras_input
+                    # Live bidirectional state binding connection mapping
+                    if additional_paras_input != additional_paras_mapped:
                         st.session_state.persist_additional_paras = additional_paras_input
 
                     # 3. Dynamic Auto-Numbering Engine (Triggers on Enter inside Box)
@@ -1043,7 +1031,9 @@ else:
                     }, 1000);
                     </script>
                     """
-                    custom_bridge_components.html(auto_number_js, height=0)
+                    components.html(auto_number_js, height=0)
+
+
 
 
 
