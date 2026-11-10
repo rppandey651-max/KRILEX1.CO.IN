@@ -921,16 +921,23 @@ else:
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown("##### 📝 Additional Custom Legal Paragraphs / Grounds")
                 
-                # Streamlit side custom Javascript event receiver hook framework
-                # This catches the text sent from the voice component iframe
-                import html
-                
-                # Check if custom query param text exists, fallback to state integration
-                if "voice_input_buffer" not in st.session_state:
-                    st.session_state.voice_input_buffer = ""
+                # Check and catch voice input payload sent via query string parameter matrix securely
+                if "voice_payload" in st.query_params and st.query_params["voice_payload"]:
+                    new_spoken_text = st.query_params["voice_payload"]
+                    # Instantly reset the query parameter loop block configuration to avoid infinity reruns
+                    st.query_params["voice_payload"] = ""
+                    
+                    # Core state machine merge sync
+                    if additional_paras_mapped and additional_paras_mapped.strip():
+                        additional_paras_mapped = additional_paras_mapped.strip() + " " + new_spoken_text.strip()
+                    else:
+                        additional_paras_mapped = new_spoken_text.strip()
+                    
+                    st.session_state.persist_additional_paras = additional_paras_mapped
+                    st.rerun()
 
                 with st.container(border=True):
-                    # 1. Refined Iframe-Safe Voice Engine Component
+                    # 1. High Performance Native Speech Engine Iframe Box
                     custom_speech_html = """
                     <div style="font-family: sans-serif; margin-bottom: 5px;">
                         <button id="mic-btn" style="
@@ -958,17 +965,12 @@ else:
                             });
 
                             recognition.onresult = (event) => {
-                                // Extract the direct transcript text strictly from the array matrix
                                 const transcript = event.results[0][0].transcript;
                                 
-                                // Directly find the parent document's textarea by tag and manipulate value safely
-                                const parentTextareas = window.parent.document.querySelectorAll('textarea');
-                                parentTextareas.forEach(textarea => {
-                                    if(textarea.value.includes("That the applicant") || textarea.value.includes("Applicant/Caveator")) {
-                                        textarea.value += (textarea.value ? " " : "") + transcript;
-                                        textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                                    }
-                                });
+                                // Secure Parent Location query rewriting matrix injection to permanently pass text to Streamlit state
+                                const currentUrl = new URL(window.parent.location.href);
+                                currentUrl.searchParams.set("voice_payload", transcript);
+                                window.parent.location.href = currentUrl.toString();
                             };
                             
                             recognition.onspeechend = () => { resetBtn(); };
@@ -984,13 +986,17 @@ else:
                     """
                     components.html(custom_speech_html, height=45)
                     
-                    # 2. Render the Standard Streamlit Input Field Box
+                    # 2. Render the Standard Streamlit Input Field Box Linked to Verified State Engine
                     additional_paras_input = st.text_area(
                         "If you want to append or edit statement paragraphs, modify them directly below:",
                         key="f_additional_paras",
                         value=additional_paras_mapped,
                         height=180
                     )
+                    
+                    # Synchronize changes back to the global persistence dictionary when manual keys are pressed
+                    if additional_paras_input != additional_paras_mapped:
+                        st.session_state.persist_additional_paras = additional_paras_input
 
                     # 3. Dynamic Auto-Numbering Engine (Triggers on Enter inside Box)
                     auto_number_js = """
@@ -998,27 +1004,25 @@ else:
                     setTimeout(() => {
                         const textareas = window.parent.document.querySelectorAll('textarea');
                         textareas.forEach(textarea => {
-                            // Target only our specific grounds input area box panel framework
                             textarea.addEventListener('keydown', function(e) {
                                 if (e.key === 'Enter') {
                                     const pos = this.selectionStart;
                                     const textBefore = this.value.substring(0, pos);
                                     const textAfter = this.value.substring(pos);
                                     
-                                    // Find all existing sequential legal line items matching "X-" pattern
                                     const lines = textBefore.split('\\n');
                                     const lastLine = lines[lines.length - 1].trim();
                                     
                                     const match = lastLine.match(/^(\\d+)-/);
                                     if (match) {
                                         e.preventDefault();
-                                        const nextNum = parseInt(match[1]) + 1;
+                                        const currentNum = parseInt(match[1]);
+                                        const nextNum = currentNum + 1;
                                         const insertText = `\\n${nextNum}- `;
                                         
                                         this.value = textBefore + insertText + textAfter;
                                         this.selectionStart = this.selectionEnd = pos + insertText.length;
                                         
-                                        // Dispatch native UI sync hook event structure
                                         this.dispatchEvent(new Event('input', { bubbles: true }));
                                     }
                                 }
@@ -1028,6 +1032,8 @@ else:
                     </script>
                     """
                     components.html(auto_number_js, height=0)
+
+
 
 
 
