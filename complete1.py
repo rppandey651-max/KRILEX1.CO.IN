@@ -921,23 +921,36 @@ else:
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown("##### 📝 Additional Custom Legal Paragraphs / Grounds")
                 
-                # Check and catch voice input payload sent via query string parameter matrix securely
-                if "voice_payload" in st.query_params and st.query_params["voice_payload"]:
-                    new_spoken_text = st.query_params["voice_payload"]
-                    # Instantly reset the query parameter loop block configuration to avoid infinity reruns
-                    st.query_params["voice_payload"] = ""
-                    
-                    # Core state machine merge sync
-                    if additional_paras_mapped and additional_paras_mapped.strip():
-                        additional_paras_mapped = additional_paras_mapped.strip() + " " + new_spoken_text.strip()
-                    else:
-                        additional_paras_mapped = new_spoken_text.strip()
-                    
-                    st.session_state.persist_additional_paras = additional_paras_mapped
-                    st.rerun()
+                # Setup a hidden storage state to capture values immediately from components
+                if "voice_buffer_store" not in st.session_state:
+                    st.session_state.voice_buffer_store = ""
+
+                # HTML Component communication handler logic
+                # Custom injection listener inside Streamlit backend to receive variables safely
+                html_receiver_js = """
+                <script>
+                window.addEventListener('message', function(e) {
+                    if (e.data && e.data.type === 'streamlit:voice_input') {
+                        const txt = e.data.text;
+                        const textareas = window.parent.document.querySelectorAll('textarea');
+                        textareas.forEach(textarea => {
+                            // Target our grounds layout template panel explicitly
+                            if(textarea.value.includes("That the applicant") || textarea.value.includes("Applicant/Caveator") || textarea.placeholder.includes("modify them directly below")) {
+                                textarea.value += (textarea.value ? " " : "") + txt;
+                                // Core react dispatch update loop to lock values forever
+                                textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                                textarea.dispatchEvent(new Event('change', { bubbles: true }));
+                                textarea.focus();
+                            }
+                        });
+                    }
+                });
+                </script>
+                """
+                components.html(html_receiver_js, height=0)
 
                 with st.container(border=True):
-                    # 1. High Performance Native Speech Engine Iframe Box
+                    # 1. High Performance Native Audio Handshake Engine Component Box
                     custom_speech_html = """
                     <div style="font-family: sans-serif; margin-bottom: 5px;">
                         <button id="mic-btn" style="
@@ -966,11 +979,11 @@ else:
 
                             recognition.onresult = (event) => {
                                 const transcript = event.results[0][0].transcript;
-                                
-                                // Secure Parent Location query rewriting matrix injection to permanently pass text to Streamlit state
-                                const currentUrl = new URL(window.parent.location.href);
-                                currentUrl.searchParams.set("voice_payload", transcript);
-                                window.parent.location.href = currentUrl.toString();
+                                // Secure cross-iframe background broadcast protocol without system layout refreshes
+                                window.parent.postMessage({
+                                    type: 'streamlit:voice_input',
+                                    text: transcript
+                                }, '*');
                             };
                             
                             recognition.onspeechend = () => { resetBtn(); };
@@ -994,7 +1007,6 @@ else:
                         height=180
                     )
                     
-                    # Synchronize changes back to the global persistence dictionary when manual keys are pressed
                     if additional_paras_input != additional_paras_mapped:
                         st.session_state.persist_additional_paras = additional_paras_input
 
@@ -1032,8 +1044,6 @@ else:
                     </script>
                     """
                     components.html(auto_number_js, height=0)
-
-
 
 
 
