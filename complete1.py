@@ -921,81 +921,107 @@ else:
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown("##### 📝 Additional Custom Legal Paragraphs / Grounds")
                 
-                # Check for absolute voice inputs directly from live server query keys safely
-                if "voice_param_text" in st.query_params and st.query_params["voice_param_text"]:
-                    server_captured_text = st.query_params["voice_param_text"]
-                    # Instantly flush query strings matrix configuration to prevent infinity loops
-                    st.query_params["voice_param_text"] = ""
-                    
-                    if additional_paras_mapped and additional_paras_mapped.strip():
-                        additional_paras_mapped = additional_paras_mapped.strip() + " " + server_captured_text.strip()
-                    else:
-                        additional_paras_mapped = server_captured_text.strip()
-                    
-                    st.session_state.persist_additional_paras = additional_paras_mapped
-                    st.rerun()
+                # Hidden tracking memory frameworks to hold dynamic vocal payloads securely
+                if "voice_buffer_store" not in st.session_state:
+                    st.session_state.voice_buffer_store = additional_paras_mapped
 
-                with st.container(border=True):
-                    # 1. High Performance Render Iframe Compatible Speech Engine Box
-                    custom_speech_html = """
-                    <div style="font-family: sans-serif; margin-bottom: 5px;">
-                        <button id="mic-btn" style="
+                # 1. Native Custom Component that sends data via stable Streamlit state bridge
+                # Uses strict HTML Form Submit to bypass browser iframe cross-origin blocks completely
+                import streamlit.components.v1 as native_bridge_components
+                
+                voice_engine_code = f"""
+                <div style="font-family: sans-serif; margin-bottom: 5px;">
+                    <form id="voice-form" method="get" target="_parent" action="">
+                        <!-- Preserve all active URL parameters so the app layout doesn't crash -->
+                        <input type="hidden" name="voice_input_payload" id="hidden-payload" value="">
+                        <button type="button" id="mic-btn" style="
                             background-color: #f0f2f6; border: 1px solid #d3d3d3; 
                             padding: 8px 12px; border-radius: 5px; cursor: pointer;
                             display: flex; align-items: center; gap: 5px; font-size: 14px;
                         ">
                             🎤 Click to Speak
                         </button>
-                    </div>
-                    <script>
-                        const btn = document.getElementById('mic-btn');
-                        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                        if (SpeechRecognition) {
-                            const recognition = new SpeechRecognition();
-                            recognition.continuous = false;
-                            recognition.lang = 'en-US';
-                            recognition.interimResults = false;
-
-                            btn.addEventListener('click', () => {
-                                recognition.start();
-                                btn.style.backgroundColor = '#ff4b4b';
-                                btn.style.color = 'white';
-                                btn.innerText = '🔴 Listening...';
-                            });
-
-                            recognition.onresult = (event) => {
-                                // FIXED: Access structural index tracking framework array data directly 
-                                const transcript = event.results[0][0].transcript;
-                                
-                                // Direct top window query parameter routing protocol handshake
-                                const targetUrl = new URL(window.parent.location.href);
-                                targetUrl.searchParams.set("voice_param_text", transcript);
-                                window.parent.location.href = targetUrl.toString();
-                            };
-                            
-                            recognition.onspeechend = () => { resetBtn(); };
-                            recognition.onerror = () => { resetBtn(); };
-                            
-                            function resetBtn() {
-                                btn.style.backgroundColor = '#f0f2f6';
-                                btn.style.color = 'black';
-                                btn.innerText = '🎤 Click to Speak';
-                            }
-                        }
-                    </script>
-                    """
-                    components.html(custom_speech_html, height=45)
+                    </form>
+                    <p id="status" style="font-size: 12px; color: grey; margin: 5px 0 0 0;"></p>
+                </div>
+                <script>
+                    const btn = document.getElementById('mic-btn');
+                    const form = document.getElementById('voice-form');
+                    const payloadInput = document.getElementById('hidden-payload');
+                    const status = document.getElementById('status');
                     
-                    # 2. Render the Standard Streamlit Input Field Box Linked to Verified State Engine
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (SpeechRecognition) {{
+                        const recognition = new SpeechRecognition();
+                        recognition.continuous = false;
+                        recognition.lang = 'en-US';
+                        recognition.interimResults = false;
+
+                        btn.addEventListener('click', () => {{
+                            recognition.start();
+                            btn.style.backgroundColor = '#ff4b4b';
+                            btn.style.color = 'white';
+                            btn.innerText = '🔴 Listening...';
+                            status.innerText = "Speaking now...";
+                        }});
+
+                        recognition.onresult = (event) => {{
+                            const transcript = event.results[0][0].transcript;
+                            status.innerText = "Text captured! Syncing with server...";
+                            
+                            // Native URL tracking synchronization protocol mapping
+                            const currentUrl = new URL(window.parent.location.href);
+                            currentUrl.searchParams.set("voice_input_payload", transcript);
+                            window.parent.location.href = currentUrl.toString();
+                        }};
+                        
+                        recognition.onspeechend = () => {{ resetBtn(); }};
+                        recognition.onerror = (e) => {{ 
+                            status.innerText = "Error: " + e.error;
+                            resetBtn(); 
+                        }};
+                        
+                        function resetBtn() {{
+                            btn.style.backgroundColor = '#f0f2f6';
+                            btn.style.color = 'black';
+                            btn.innerText = '🎤 Click to Speak';
+                        }}
+                    }} else {{
+                        btn.style.display = 'none';
+                        status.innerText = "Speech Recognition not supported in this browser. Please use Chrome/Edge.";
+                    }}
+                </script>
+                """
+                
+                # Check for absolute query parameters input safely on server refresh
+                if "voice_input_payload" in st.query_params and st.query_params["voice_input_payload"]:
+                    incoming_speech = st.query_params["voice_input_payload"]
+                    st.query_params["voice_input_payload"] = ""  # Prevent continuous page reloading loops
+                    
+                    # Merge vocal text directly inside verified state memory matrix
+                    if st.session_state.voice_buffer_store and st.session_state.voice_buffer_store.strip():
+                        st.session_state.voice_buffer_store = st.session_state.voice_buffer_store.strip() + " " + incoming_speech.strip()
+                    else:
+                        st.session_state.voice_buffer_store = incoming_speech.strip()
+                    
+                    st.session_state.persist_additional_paras = st.session_state.voice_buffer_store
+                    st.rerun()
+
+                with st.container(border=True):
+                    # Render the fixed audio component block securely
+                    native_bridge_components.html(voice_engine_code, height=55)
+                    
+                    # 2. Render standard Streamlit layout text area connected via session state keys
                     additional_paras_input = st.text_area(
                         "If you want to append or edit statement paragraphs, modify them directly below:",
                         key="f_additional_paras",
-                        value=additional_paras_mapped,
+                        value=st.session_state.voice_buffer_store,
                         height=180
                     )
                     
-                    # Live bidirectional state binding connection mapping
-                    if additional_paras_input != additional_paras_mapped:
+                    # Live bidirectional state binding connection mapping to track manual typing edits
+                    if additional_paras_input != st.session_state.voice_buffer_store:
+                        st.session_state.voice_buffer_store = additional_paras_input
                         st.session_state.persist_additional_paras = additional_paras_input
 
                     # 3. Dynamic Auto-Numbering Engine (Triggers on Enter inside Box)
@@ -1023,7 +1049,9 @@ else:
                                         this.value = textBefore + insertText + textAfter;
                                         this.selectionStart = this.selectionEnd = pos + insertText.length;
                                         
+                                        // Trigger input tracking frameworks to update state machine natively
                                         this.dispatchEvent(new Event('input', { bubbles: true }));
+                                        this.dispatchEvent(new Event('change', { bubbles: true }));
                                     }
                                 }
                             });
@@ -1031,7 +1059,8 @@ else:
                     }, 1000);
                     </script>
                     """
-                    components.html(auto_number_js, height=0)
+                    native_bridge_components.html(auto_number_js, height=0)
+
 
 
 
