@@ -921,36 +921,22 @@ else:
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown("##### 📝 Additional Custom Legal Paragraphs / Grounds")
                 
-                # Setup a hidden storage state to capture values immediately from components
-                if "voice_buffer_store" not in st.session_state:
-                    st.session_state.voice_buffer_store = ""
-
-                # HTML Component communication handler logic
-                # Custom injection listener inside Streamlit backend to receive variables safely
-                html_receiver_js = """
-                <script>
-                window.addEventListener('message', function(e) {
-                    if (e.data && e.data.type === 'streamlit:voice_input') {
-                        const txt = e.data.text;
-                        const textareas = window.parent.document.querySelectorAll('textarea');
-                        textareas.forEach(textarea => {
-                            // Target our grounds layout template panel explicitly
-                            if(textarea.value.includes("That the applicant") || textarea.value.includes("Applicant/Caveator") || textarea.placeholder.includes("modify them directly below")) {
-                                textarea.value += (textarea.value ? " " : "") + txt;
-                                // Core react dispatch update loop to lock values forever
-                                textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                                textarea.dispatchEvent(new Event('change', { bubbles: true }));
-                                textarea.focus();
-                            }
-                        });
-                    }
-                });
-                </script>
-                """
-                components.html(html_receiver_js, height=0)
+                # Check for query parameters using state management to prevent text vanishing on click
+                if "voice_text" in st.query_params and st.query_params["voice_text"]:
+                    captured_text = st.query_params["voice_text"]
+                    # Reset immediately in query params memory
+                    st.query_params["voice_text"] = ""
+                    
+                    if additional_paras_mapped and additional_paras_mapped.strip():
+                        additional_paras_mapped = additional_paras_mapped.strip() + " " + captured_text.strip()
+                    else:
+                        additional_paras_mapped = captured_text.strip()
+                    
+                    st.session_state.persist_additional_paras = additional_paras_mapped
+                    st.rerun()
 
                 with st.container(border=True):
-                    # 1. High Performance Native Audio Handshake Engine Component Box
+                    # 1. Fully Working Render/Iframe Compatible Voice Component
                     custom_speech_html = """
                     <div style="font-family: sans-serif; margin-bottom: 5px;">
                         <button id="mic-btn" style="
@@ -979,11 +965,18 @@ else:
 
                             recognition.onresult = (event) => {
                                 const transcript = event.results[0][0].transcript;
-                                // Secure cross-iframe background broadcast protocol without system layout refreshes
-                                window.parent.postMessage({
-                                    type: 'streamlit:voice_input',
-                                    text: transcript
-                                }, '*');
+                                
+                                // FIXED: Access the top-most window URL directly to pass value into Streamlit safely
+                                try {
+                                    const topUrl = new URL(window.top.location.href);
+                                    topUrl.searchParams.set("voice_text", transcript);
+                                    window.top.location.href = topUrl.toString();
+                                } catch(e) {
+                                    // Fallback for strict domain cross-origin blocking
+                                    const currentUrl = new URL(window.location.href);
+                                    currentUrl.searchParams.set("voice_text", transcript);
+                                    window.parent.location.href = currentUrl.toString();
+                                }
                             };
                             
                             recognition.onspeechend = () => { resetBtn(); };
@@ -1044,8 +1037,6 @@ else:
                     </script>
                     """
                     components.html(auto_number_js, height=0)
-
-
 
 
                 # 🎯 NEW: Side-by-Side Action Grid for Compile and Cancel Toggles
