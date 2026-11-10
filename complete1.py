@@ -132,6 +132,79 @@ def get_all_indian_courts():
         "Punjab and Haryana High Court",
         "Rajasthan High Court"
     ]
+# =======================================================
+# VOICE COMMAND COMPONENT FOR LEGAL PARAGRAPHS
+# =======================================================
+def voice_input_component():
+    custom_speech_html = """
+    <div style="font-family: sans-serif; margin-bottom: 10px;">
+        <button id="mic-btn" style="
+            background-color: #f0f2f6; 
+            border: 1px solid #d3d3d3; 
+            padding: 8px 12px; 
+            border-radius: 5px; 
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        ">
+            🎤 Click to Speak
+        </button>
+        <p id="status" style="font-size: 12px; color: grey; margin: 5px 0 0 0;"></p>
+    </div>
+
+    <script>
+        const btn = document.getElementById('mic-btn');
+        const status = document.getElementById('status');
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+            btn.style.display = 'none';
+            status.innerText = "Speech recognition not supported in this browser. Please use Chrome/Edge.";
+        } else {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+
+            btn.addEventListener('click', () => {
+                recognition.start();
+                btn.style.backgroundColor = '#ff4b4b';
+                btn.style.color = 'white';
+                btn.innerText = '🔴 Listening...';
+                status.innerText = "Speaking now...";
+            });
+
+            recognition.onresult = (event) => {
+                const transcript = event.results.transcript;
+                window.parent.postMessage({
+                    type: 'streamlit:voice_input',
+                    text: transcript
+                }, '*');
+                status.innerText = "Text captured: " + transcript;
+            };
+
+            recognition.onspeechend = () => {
+                recognition.stop();
+                resetButton();
+            };
+
+            recognition.onerror = (event) => {
+                status.innerText = "Error occurred: " + event.error;
+                resetButton();
+            };
+            
+            function resetButton() {
+                btn.style.backgroundColor = '#f0f2f6';
+                btn.style.color = 'black';
+                btn.innerText = '🎤 Click to Speak';
+            }
+        }
+    </script>
+    """
+    components.html(custom_speech_html, height=80)
+
 
 # ====================================================
 # PART 2: SPLASH SCREEN ENGINE & SECURE AUTH INTERFACE
@@ -840,12 +913,16 @@ else:
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown("##### 📝 Additional Custom Legal Paragraphs / Grounds")
                 with st.container(border=True):
+                    # Yahan par helper function ko call karein takia button field ke upar render ho ske
+                    voice_input_component()
+                    
                     additional_paras_input = st.text_area(
                         "If you want to append or edit statement paragraphs, modify them directly below:",
                         key="f_additional_paras",
                         value=additional_paras_mapped,
                         height=180
                     )
+
 
                 # 🎯 NEW: Side-by-Side Action Grid for Compile and Cancel Toggles
                 st.markdown("<br>", unsafe_allow_html=True)
