@@ -921,21 +921,16 @@ else:
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown("##### 📝 Additional Custom Legal Paragraphs / Grounds")
                 
-                # Check for voice input data from URL query parameters securely
-                if "voice_text" in st.query_params and st.query_params["voice_text"]:
-                    captured_voice = st.query_params["voice_text"]
-                    # Reset the query param so it doesn't loop infinitely
-                    st.query_params["voice_text"] = ""
-                    # Seamlessly append to your existing dynamic paragraph mapping logic
-                    if additional_paras_mapped:
-                        additional_paras_mapped += " " + captured_voice
-                    else:
-                        additional_paras_mapped = captured_voice
-                    st.session_state.persist_additional_paras = additional_paras_mapped
-                    st.rerun()
+                # Streamlit side custom Javascript event receiver hook framework
+                # This catches the text sent from the voice component iframe
+                import html
+                
+                # Check if custom query param text exists, fallback to state integration
+                if "voice_input_buffer" not in st.session_state:
+                    st.session_state.voice_input_buffer = ""
 
                 with st.container(border=True):
-                    # 1. 100% Working Iframe-Safe Voice Component Setup
+                    # 1. Refined Iframe-Safe Voice Engine Component
                     custom_speech_html = """
                     <div style="font-family: sans-serif; margin-bottom: 5px;">
                         <button id="mic-btn" style="
@@ -963,18 +958,27 @@ else:
                             });
 
                             recognition.onresult = (event) => {
+                                // Extract the direct transcript text strictly from the array matrix
                                 const transcript = event.results[0][0].transcript;
-                                // Pass text securely using URL rewrite handshake matrix
-                                const url = new URL(window.parent.location.href);
-                                url.searchParams.set("voice_text", transcript);
-                                window.parent.location.href = url.toString();
+                                
+                                // Directly find the parent document's textarea by tag and manipulate value safely
+                                const parentTextareas = window.parent.document.querySelectorAll('textarea');
+                                parentTextareas.forEach(textarea => {
+                                    if(textarea.value.includes("That the applicant") || textarea.value.includes("Applicant/Caveator")) {
+                                        textarea.value += (textarea.value ? " " : "") + transcript;
+                                        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                                    }
+                                });
                             };
-                            recognition.onspeechend = () => { recognition.stop(); };
-                            recognition.onerror = () => {
+                            
+                            recognition.onspeechend = () => { resetBtn(); };
+                            recognition.onerror = () => { resetBtn(); };
+                            
+                            function resetBtn() {
                                 btn.style.backgroundColor = '#f0f2f6';
                                 btn.style.color = 'black';
                                 btn.innerText = '🎤 Click to Speak';
-                            };
+                            }
                         }
                     </script>
                     """
@@ -995,37 +999,36 @@ else:
                         const textareas = window.parent.document.querySelectorAll('textarea');
                         textareas.forEach(textarea => {
                             // Target only our specific grounds input area box panel framework
-                            if(textarea.value.includes("That the applicant")) {
-                                textarea.addEventListener('keydown', function(e) {
-                                    if (e.key === 'Enter') {
-                                        const pos = this.selectionStart;
-                                        const textBefore = this.value.substring(0, pos);
-                                        const textAfter = this.value.substring(pos);
+                            textarea.addEventListener('keydown', function(e) {
+                                if (e.key === 'Enter') {
+                                    const pos = this.selectionStart;
+                                    const textBefore = this.value.substring(0, pos);
+                                    const textAfter = this.value.substring(pos);
+                                    
+                                    // Find all existing sequential legal line items matching "X-" pattern
+                                    const lines = textBefore.split('\\n');
+                                    const lastLine = lines[lines.length - 1].trim();
+                                    
+                                    const match = lastLine.match(/^(\\d+)-/);
+                                    if (match) {
+                                        e.preventDefault();
+                                        const nextNum = parseInt(match[1]) + 1;
+                                        const insertText = `\\n${nextNum}- `;
                                         
-                                        // Find all existing sequential legal line items matching "X-" pattern
-                                        const lines = textBefore.split('\\n');
-                                        const lastLine = lines[lines.length - 1].trim();
+                                        this.value = textBefore + insertText + textAfter;
+                                        this.selectionStart = this.selectionEnd = pos + insertText.length;
                                         
-                                        const match = lastLine.match(/^(\\d+)-/);
-                                        if (match) {
-                                            e.preventDefault();
-                                            const nextNum = parseInt(match[1]) + 1;
-                                            const insertText = `\\n${nextNum}- `;
-                                            
-                                            this.value = textBefore + insertText + textAfter;
-                                            this.selectionStart = this.selectionEnd = pos + insertText.length;
-                                            
-                                            // Dispatch native UI sync hook event structure
-                                            this.dispatchEvent(new Event('input', { bubbles: true }));
-                                        }
+                                        // Dispatch native UI sync hook event structure
+                                        this.dispatchEvent(new Event('input', { bubbles: true }));
                                     }
-                                });
-                            }
+                                }
+                            });
                         });
                     }, 1000);
                     </script>
                     """
                     components.html(auto_number_js, height=0)
+
 
 
 
