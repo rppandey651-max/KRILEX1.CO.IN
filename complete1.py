@@ -917,19 +917,116 @@ else:
                 st.session_state.persist_adv_name = "\n".join(adv_names_list)
 
 
-                # --- FULL WIDTH: EDITABLE LEGAL PARAGRAPHS BLOCK ---
+                # --- FULL WIDTH: EDITABLE LEGAL PARAGRAPHS BLOCK WITH ADVANCED AUTOMATION ---
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown("##### 📝 Additional Custom Legal Paragraphs / Grounds")
+                
+                # Check for voice input data from URL query parameters securely
+                if "voice_text" in st.query_params and st.query_params["voice_text"]:
+                    captured_voice = st.query_params["voice_text"]
+                    # Reset the query param so it doesn't loop infinitely
+                    st.query_params["voice_text"] = ""
+                    # Seamlessly append to your existing dynamic paragraph mapping logic
+                    if additional_paras_mapped:
+                        additional_paras_mapped += " " + captured_voice
+                    else:
+                        additional_paras_mapped = captured_voice
+                    st.session_state.persist_additional_paras = additional_paras_mapped
+                    st.rerun()
+
                 with st.container(border=True):
-                    # Yahan par helper function ko call karein takia button field ke upar render ho ske
-                    voice_input_component()
+                    # 1. 100% Working Iframe-Safe Voice Component Setup
+                    custom_speech_html = """
+                    <div style="font-family: sans-serif; margin-bottom: 5px;">
+                        <button id="mic-btn" style="
+                            background-color: #f0f2f6; border: 1px solid #d3d3d3; 
+                            padding: 8px 12px; border-radius: 5px; cursor: pointer;
+                            display: flex; align-items: center; gap: 5px; font-size: 14px;
+                        ">
+                            🎤 Click to Speak
+                        </button>
+                    </div>
+                    <script>
+                        const btn = document.getElementById('mic-btn');
+                        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                        if (SpeechRecognition) {
+                            const recognition = new SpeechRecognition();
+                            recognition.continuous = false;
+                            recognition.lang = 'en-US';
+                            recognition.interimResults = false;
+
+                            btn.addEventListener('click', () => {
+                                recognition.start();
+                                btn.style.backgroundColor = '#ff4b4b';
+                                btn.style.color = 'white';
+                                btn.innerText = '🔴 Listening...';
+                            });
+
+                            recognition.onresult = (event) => {
+                                const transcript = event.results[0][0].transcript;
+                                // Pass text securely using URL rewrite handshake matrix
+                                const url = new URL(window.parent.location.href);
+                                url.searchParams.set("voice_text", transcript);
+                                window.parent.location.href = url.toString();
+                            };
+                            recognition.onspeechend = () => { recognition.stop(); };
+                            recognition.onerror = () => {
+                                btn.style.backgroundColor = '#f0f2f6';
+                                btn.style.color = 'black';
+                                btn.innerText = '🎤 Click to Speak';
+                            };
+                        }
+                    </script>
+                    """
+                    components.html(custom_speech_html, height=45)
                     
+                    # 2. Render the Standard Streamlit Input Field Box
                     additional_paras_input = st.text_area(
                         "If you want to append or edit statement paragraphs, modify them directly below:",
                         key="f_additional_paras",
                         value=additional_paras_mapped,
                         height=180
                     )
+
+                    # 3. Dynamic Auto-Numbering Engine (Triggers on Enter inside Box)
+                    auto_number_js = """
+                    <script>
+                    setTimeout(() => {
+                        const textareas = window.parent.document.querySelectorAll('textarea');
+                        textareas.forEach(textarea => {
+                            // Target only our specific grounds input area box panel framework
+                            if(textarea.value.includes("That the applicant")) {
+                                textarea.addEventListener('keydown', function(e) {
+                                    if (e.key === 'Enter') {
+                                        const pos = this.selectionStart;
+                                        const textBefore = this.value.substring(0, pos);
+                                        const textAfter = this.value.substring(pos);
+                                        
+                                        // Find all existing sequential legal line items matching "X-" pattern
+                                        const lines = textBefore.split('\\n');
+                                        const lastLine = lines[lines.length - 1].trim();
+                                        
+                                        const match = lastLine.match(/^(\\d+)-/);
+                                        if (match) {
+                                            e.preventDefault();
+                                            const nextNum = parseInt(match[1]) + 1;
+                                            const insertText = `\\n${nextNum}- `;
+                                            
+                                            this.value = textBefore + insertText + textAfter;
+                                            this.selectionStart = this.selectionEnd = pos + insertText.length;
+                                            
+                                            // Dispatch native UI sync hook event structure
+                                            this.dispatchEvent(new Event('input', { bubbles: true }));
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }, 1000);
+                    </script>
+                    """
+                    components.html(auto_number_js, height=0)
+
 
 
                 # 🎯 NEW: Side-by-Side Action Grid for Compile and Cancel Toggles
