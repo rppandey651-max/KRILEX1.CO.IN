@@ -178,11 +178,17 @@ def voice_input_component():
             });
 
             recognition.onresult = (event) => {
-                const transcript = event.results.transcript;
-                window.parent.postMessage({
-                    type: 'streamlit:voice_input',
-                    text: transcript
-                }, '*');
+                // FIXED: Handled strict nested array extraction matrix for accurate web audio speech
+                const transcript = event.results[0][0].transcript;
+                
+                // Directly search and inject the string text into your parent Streamlit text area field
+                const textarea = window.parent.document.querySelector('textarea[aria-label="If you want to append or edit statement paragraphs, modify them directly below:"]');
+                if (textarea) {
+                    textarea.value += (textarea.value ? " " : "") + transcript;
+                    // Trigger dynamic structural tracking framework reload input update event
+                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+
                 status.innerText = "Text captured: " + transcript;
             };
 
@@ -205,6 +211,7 @@ def voice_input_component():
     </script>
     """
     components.html(custom_speech_html, height=80)
+
 
 
 # ====================================================
