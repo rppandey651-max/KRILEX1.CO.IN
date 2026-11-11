@@ -427,45 +427,6 @@ elif not st.session_state.logged_in:
                 "and legal petitions in standard Times New Roman (Size 14) formatting."
             )
 
-        # 7. Footer Section (Dark Box with Inline Pop-up Triggers)
-        st.markdown("""
-            <style>
-            .footer-bar {
-                background-color: #1F2937;
-                color: #F3F4F6;
-                padding: 15px 20px;
-                border-radius: 8px 8px 0 0;
-                margin-top: 30px;
-                text-align: center;
-            }
-            /* Style footer buttons as clean inline links inside the dark bar */
-            div[data-testid="stHorizontalBlock"].footer-links {
-                background-color: #1F2937;
-                padding: 0 20px 15px 20px;
-                border-radius: 0 0 8px 8px;
-                margin-top: -16px;
-            }
-            </style>
-            <div class="footer-bar">
-                <p style="margin: 0; font-size: 13px; color: #9CA3AF;">© 2026 Krilex Legal Tech Solution. All rights reserved.</p>
-            </div>
-        """, unsafe_allow_html=True)
-
-        # Inline Footer Buttons (Home | Helpdesk | About)
-        f_sp1, f_c1, f_c2, f_c3, f_sp2 = st.columns([3, 1, 1, 1, 3])
-        with f_c1:
-            if st.button("Home", key="footer_pop_home", use_container_width=True):
-                st.session_state.page = "main"
-                st.rerun()
-        with f_c2:
-            if st.button("Helpdesk", key="footer_pop_helpdesk", use_container_width=True):
-                show_helpdesk_popup()
-        with f_c3:
-            if st.button("About", key="footer_pop_about", use_container_width=True):
-                show_about_popup()
-
-
-
 
     elif st.session_state.page == "login":
         if logo_base64: 
@@ -1401,5 +1362,71 @@ IN THE MATTER OF:
                         use_container_width=True,
                         type="primary"
                     )
+# =======================================================
+# GLOBAL PERSISTENT FOOTER (APPEARS ON EVERY PAGE)
+# =======================================================
+if elapsed_time >= 2.5:
+    @st.dialog("Helpdesk Support")
+    def global_helpdesk_popup():
+        st.write("Need assistance with Krilex legal drafting or account recovery? Reach out to our support team.")
+        st.info("Support Email: support@krilex.com")
+
+    @st.dialog("About Krilex")
+    def global_about_popup():
+        st.write(
+            "Krilex is a legal drafting application engineered to simplify and digitalize procedural drafting "
+            "workflows across Indian court systems. Generate court-ready Caveat Applications, Stay Applications, "
+            "and legal petitions in standard Times New Roman (Size 14) formatting."
+        )
+
+    st.markdown("""
+        <style>
+        .krilex-dark-footer {
+            background-color: #1F2937;
+            color: #F3F4F6;
+            padding: 22px 20px 10px 20px;
+            border-radius: 8px 8px 0 0;
+            margin-top: 40px;
+            text-align: center;
+        }
+        /* Style the 3 inline buttons to look like clean text links inside the dark box */
+        div[data-testid="stHorizontalBlock"]:has(button[kind="tertiary"]) {
+            background-color: #1F2937;
+            padding: 5px 20px 20px 20px;
+            border-radius: 0 0 8px 8px;
+            margin-top: -16px;
+        }
+        button[kind="tertiary"] {
+            color: #FFFFFF !important;
+            font-weight: 600 !important;
+            font-size: 15px !important;
+            padding: 0px !important;
+            min-height: 0px !important;
+        }
+        button[kind="tertiary"]:hover {
+            color: #93C5FD !important;
+            text-decoration: underline !important;
+        }
+        </style>
+        <div class="krilex-dark-footer">
+            <p style="margin: 0 0 8px 0; font-size: 13px; color: #D1D5DB;">Support: support@krilex.com</p>
+            <p style="margin: 0; font-size: 12px; color: #9CA3AF;">© 2026 Krilex Legal Tech Solution. All rights reserved.</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Centered Inline Links inside the Dark Footer Box
+    sp_left, col_f1, col_f2, col_f3, sp_right = st.columns([3, 1, 1, 1, 3])
+    with col_f1:
+        if st.button("Home", key="global_footer_home", type="tertiary", use_container_width=True):
+            st.session_state.logged_in = False
+            st.session_state.page = "main"
+            st.session_state.active_app_tile = None
+            st.rerun()
+    with col_f2:
+        if st.button("Helpdesk", key="global_footer_helpdesk", type="tertiary", use_container_width=True):
+            global_helpdesk_popup()
+    with col_f3:
+        if st.button("About", key="global_footer_about", type="tertiary", use_container_width=True):
+            global_about_popup()
 
                 
