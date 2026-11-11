@@ -1447,7 +1447,7 @@ if elapsed_time >= 2.5:
         </div>
     """, unsafe_allow_html=True)
 
-    sp_left, col_f1, col_f2, col_f3, sp_right = st.columns()
+    sp_left, col_f1, col_f2, col_f3, sp_right = st.columns([3, 1, 1, 1, 3])
     with col_f1:
         if st.button("Home", key="global_footer_home", type="tertiary", use_container_width=True):
             st.session_state.logged_in = False
