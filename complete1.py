@@ -1081,71 +1081,43 @@ else:
                     # 1. FIXED: Clean Iframe Speech Engine without page reloading side-effects
                     import streamlit.components.v1 as secure_bridge_components
                     
-                    voice_engine_code = """
-                    <div style="font-family: sans-serif; margin-bottom: 5px;">
-                        <button type="button" id="mic-btn" style="
-                            background-color: #f0f2f6; border: 1px solid #d3d3d3; 
-                            padding: 8px 12px; border-radius: 5px; cursor: pointer;
-                            display: flex; align-items: center; gap: 5px; font-size: 14px;
-                        ">
-                            🎤 Click to Speak
-                        </button>
-                        <p id="status" style="font-size: 12px; color: grey; margin: 5px 0 0 0;"></p>
-                    </div>
-                    <script>
-                        const btn = document.getElementById('mic-btn');
-                        const status = document.getElementById('status');
-                        
-                        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                        if (SpeechRecognition) {
-                            const recognition = new SpeechRecognition();
-                            recognition.continuous = false;
-                            recognition.lang = 'en-US';
-                            recognition.interimResults = false;
-
-                            btn.addEventListener('click', () => {
-                                recognition.start();
-                                btn.style.backgroundColor = '#ff4b4b';
-                                btn.style.color = 'white';
-                                btn.innerText = '🔴 Listening...';
-                                status.innerText = "Speaking now...";
-                            });
-
-                            recognition.onresult = (event) => {
-                                // Extract speech transcript accurately from web audio stream
-                                const transcript = event.results[0][0].transcript;
-                                status.innerText = "Text captured!";
-                                
-                                // Directly target the textarea parent frame element and manipulate text area index
-                                const textareas = window.parent.document.querySelectorAll('textarea');
-                                textareas.forEach(textarea => {
-                                    textarea.value += (textarea.value ? " " : "") + transcript;
+                with st.container(border=True):
+                    st.write("🎤 **Dictate Paragraph (Click Mic to Record & Stop to Type):**")
+                    audio_value = st.audio_input("Record your legal statement", label_visibility="collapsed")
+                    
+                    if audio_value is not None:
+                        audio_id = hash(audio_value.getvalue())
+                        if st.session_state.get("last_processed_audio") != audio_id:
+                            import speech_recognition as sr
+                            recognizer = sr.Recognizer()
+                            try:
+                                with sr.AudioFile(audio_value) as source:
+                                    audio_data = recognizer.record(source)
+                                    spoken_text = recognizer.recognize_google(audio_data, language="en-IN")
                                     
-                                    // Dispatch UI sync triggers to update react states without page refreshes
-                                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                                    textarea.dispatchEvent(new Event('change', { bubbles: true }));
-                                    textarea.focus();
-                                });
-                            };
-                            
-                            recognition.onspeechend = () => { resetBtn(); };
-                            recognition.onerror = (e) => { 
-                                status.innerText = "Error: " + e.error;
-                                resetBtn(); 
-                            };
-                            
-                            function resetBtn() {
-                                btn.style.backgroundColor = '#f0f2f6';
-                                btn.style.color = 'black';
-                                btn.innerText = '🎤 Click to Speak';
-                            }
-                        } else {
-                            btn.style.display = 'none';
-                            status.innerText = "Speech Recognition not supported in this browser.";
-                        }
-                    </script>
-                    """
-                    secure_bridge_components.html(voice_engine_code, height=55)
+                                    current_txt = st.session_state.voice_buffer_store.strip()
+                                    st.session_state.voice_buffer_store = (current_txt + " " + spoken_text).strip()
+                                    st.session_state.persist_additional_paras = st.session_state.voice_buffer_store
+                                    st.session_state.last_processed_audio = audio_id
+                                    st.success(f"Captured: {spoken_text}")
+                                    st.rerun()
+                            except sr.UnknownValueError:
+                                st.warning("⚠️ Could not understand audio. Please speak clearly and try again.")
+                            except Exception as e:
+                                st.error(f"⚠️ Voice processing error: {e}")
+
+                    # Render standard Streamlit layout text area connected via session state keys
+                    additional_paras_input = st.text_area(
+                        "If you want to append or edit statement paragraphs, modify them directly below:",
+                        key="f_additional_paras",
+                        value=st.session_state.voice_buffer_store,
+                        height=180
+                    )
+                    
+                    if additional_paras_input != st.session_state.voice_buffer_store:
+                        st.session_state.voice_buffer_store = additional_paras_input
+                        st.session_state.persist_additional_paras = additional_paras_input
+
                     
                     # 2. Render standard Streamlit layout text area connected via session state keys
                     additional_paras_input = st.text_area(
