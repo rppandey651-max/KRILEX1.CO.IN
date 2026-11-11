@@ -391,6 +391,7 @@ elif not st.session_state.logged_in:
                 else:
                     st.warning("Please fill in all fields before submitting.")
 
+
         # 7. Footer Section
         st.markdown("""
             <div class="footer-section">
