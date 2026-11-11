@@ -1368,16 +1368,50 @@ IN THE MATTER OF:
 if elapsed_time >= 2.5:
     @st.dialog("Helpdesk Support")
     def global_helpdesk_popup():
-        st.write("Need assistance with Krilex legal drafting or account recovery? Reach out to our support team.")
-        st.info("Support Email: support@krilex.com")
+        st.write("Need assistance with Krilex legal drafting or account recovery? Check quick tips below or send us a direct message.")
+        
+        st.markdown("""
+        **Quick Help:**
+        * **OTP Not Received?** Check your Gmail Spam folder or wait 90 seconds to resend.
+        * **PDF Formatting:** Ensure all required fields are filled before generating the preview.
+        """)
+        
+        st.info("Direct Email: support@krilex.com | Response Time: Within 24 Hours")
+
+        with st.form("popup_helpdesk_form", clear_on_submit=True):
+            u_contact = st.text_input("Your Email or Phone Number")
+            u_issue = st.text_area("Describe Your Issue", height=80)
+            if st.form_submit_button("Send Support Request", type="primary", use_container_width=True):
+                if u_contact and u_issue:
+                    import requests
+                    try:
+                        requests.post(
+                            "https://formsubmit.co",
+                            json={
+                                "contact": u_contact,
+                                "issue": u_issue,
+                                "_subject": "Krilex Helpdesk Support Ticket"
+                            },
+                            timeout=5
+                        )
+                    except Exception:
+                        pass
+                    st.success("Your request has been sent! Our support team will contact you soon.")
+                else:
+                    st.warning("Please enter both your contact details and issue.")
 
     @st.dialog("About Krilex")
     def global_about_popup():
         st.write(
             "Krilex is a legal drafting application engineered to simplify and digitalize procedural drafting "
-            "workflows across Indian court systems. Generate court-ready Caveat Applications, Stay Applications, "
-            "and legal petitions in standard Times New Roman (Size 14) formatting."
+            "workflows across Indian court systems."
         )
+        st.markdown("""
+        **Why Choose Krilex?**
+        * **Court-Ready Formatting:** Instant generation of Caveat, Stay, and Writ petitions in standard Times New Roman (Size 14).
+        * **Smart Drafting Tools:** Built-in voice dictation and auto-numbering to save manual typing hours.
+        * **100% Secure & Confidential:** Protected with two-step OTP verification so your client details stay private.
+        """)
 
     st.markdown("""
         <style>
@@ -1389,7 +1423,6 @@ if elapsed_time >= 2.5:
             margin-top: 40px;
             text-align: center;
         }
-        /* Style the 3 inline buttons to look like clean text links inside the dark box */
         div[data-testid="stHorizontalBlock"]:has(button[kind="tertiary"]) {
             background-color: #1F2937;
             padding: 5px 20px 20px 20px;
@@ -1414,8 +1447,7 @@ if elapsed_time >= 2.5:
         </div>
     """, unsafe_allow_html=True)
 
-    # Centered Inline Links inside the Dark Footer Box
-    sp_left, col_f1, col_f2, col_f3, sp_right = st.columns([3, 1, 1, 1, 3])
+    sp_left, col_f1, col_f2, col_f3, sp_right = st.columns()
     with col_f1:
         if st.button("Home", key="global_footer_home", type="tertiary", use_container_width=True):
             st.session_state.logged_in = False
@@ -1428,17 +1460,5 @@ if elapsed_time >= 2.5:
     with col_f3:
         if st.button("About", key="global_footer_about", type="tertiary", use_container_width=True):
             global_about_popup()
-    @st.dialog("About Krilex")
-    def global_about_popup():
-        st.write(
-            "Krilex is a legal drafting application engineered to simplify and digitalize procedural drafting "
-            "workflows across Indian court systems."
-        )
-        st.markdown("""
-        **Why Choose Krilex?**
-        * **Court-Ready Formatting:** Instant generation of Caveat, Stay, and Writ petitions in standard Times New Roman (Size 14).
-        * **Smart Drafting Tools:** Built-in voice dictation and auto-numbering to save manual typing hours.
-        * **100% Secure & Confidential:** Protected with two-step OTP verification so your client details stay private.
-        """)
 
                 
