@@ -1069,18 +1069,13 @@ else:
                 st.session_state.persist_adv_name = "\n".join(adv_names_list)
 
 
-                # --- FULL WIDTH: EDITABLE LEGAL PARAGRAPHS BLOCK WITH ADVANCED AUTOMATION ---
+                # --- FULL WIDTH: EDITABLE LEGAL PARAGRAPHS BLOCK WITH VOICE & AUTO-NUMBERING ---
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown("##### 📝 Additional Custom Legal Paragraphs / Grounds")
                 
-                # Hidden tracking session state validation framework to avoid clear formatting logic
-                if "voice_buffer_store" not in st.session_state:
-                    st.session_state.voice_buffer_store = additional_paras_mapped
+                if "f_additional_paras" not in st.session_state:
+                    st.session_state.f_additional_paras = additional_paras_mapped
 
-                with st.container(border=True):
-                    # 1. FIXED: Clean Iframe Speech Engine without page reloading side-effects
-                    import streamlit.components.v1 as secure_bridge_components
-                    
                 with st.container(border=True):
                     st.write("🎤 **Dictate Paragraph (Click Mic to Record & Stop to Type):**")
                     audio_value = st.audio_input("Record your legal statement", label_visibility="collapsed")
@@ -1095,49 +1090,33 @@ else:
                                     audio_data = recognizer.record(source)
                                     spoken_text = recognizer.recognize_google(audio_data, language="en-IN")
                                     
-                                    current_txt = st.session_state.voice_buffer_store.strip()
-                                    st.session_state.voice_buffer_store = (current_txt + " " + spoken_text).strip()
-                                    st.session_state.persist_additional_paras = st.session_state.voice_buffer_store
+                                    current_txt = st.session_state.f_additional_paras.strip()
+                                    updated_txt = (current_txt + " " + spoken_text).strip()
+                                    st.session_state.f_additional_paras = updated_txt
+                                    st.session_state.persist_additional_paras = updated_txt
                                     st.session_state.last_processed_audio = audio_id
-                                    st.success(f"Captured: {spoken_text}")
                                     st.rerun()
                             except sr.UnknownValueError:
                                 st.warning("⚠️ Could not understand audio. Please speak clearly and try again.")
                             except Exception as e:
                                 st.error(f"⚠️ Voice processing error: {e}")
 
-                    # Render standard Streamlit layout text area connected via session state keys
                     additional_paras_input = st.text_area(
                         "If you want to append or edit statement paragraphs, modify them directly below:",
                         key="f_additional_paras",
-                        value=st.session_state.voice_buffer_store,
                         height=180
                     )
-                    
-                    if additional_paras_input != st.session_state.voice_buffer_store:
-                        st.session_state.voice_buffer_store = additional_paras_input
-                        st.session_state.persist_additional_paras = additional_paras_input
+                    st.session_state.persist_additional_paras = additional_paras_input
 
-                    
-                    # 2. Render standard Streamlit layout text area connected via session state keys
-                    additional_paras_input = st.text_area(
-                        "If you want to append or edit statement paragraphs, modify them directly below:",
-                        key="f_additional_paras",
-                        value=st.session_state.voice_buffer_store,
-                        height=180
-                    )
-                    
-                    # Live bidirectional state binding connection mapping to track user typing
-                    if additional_paras_input != st.session_state.voice_buffer_store:
-                        st.session_state.voice_buffer_store = additional_paras_input
-                        st.session_state.persist_additional_paras = additional_paras_input
-
-                    # 3. Dynamic Auto-Numbering Engine (Triggers on Enter inside Box)
+                    import streamlit.components.v1 as secure_bridge_components
                     auto_number_js = """
                     <script>
                     setTimeout(() => {
                         const textareas = window.parent.document.querySelectorAll('textarea');
                         textareas.forEach(textarea => {
+                            if (textarea.dataset.autoNumAttached) return;
+                            textarea.dataset.autoNumAttached = "true";
+                            
                             textarea.addEventListener('keydown', function(e) {
                                 if (e.key === 'Enter') {
                                     const pos = this.selectionStart;
@@ -1163,10 +1142,11 @@ else:
                                 }
                             });
                         });
-                    }, 1000);
+                    }, 800);
                     </script>
                     """
                     secure_bridge_components.html(auto_number_js, height=0)
+
 
 
                 # 🎯 NEW: Side-by-Side Action Grid for Compile and Cancel Toggles
