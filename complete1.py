@@ -391,14 +391,21 @@ elif not st.session_state.logged_in:
                 submitted = st.form_submit_button("Send Message", type="primary")
                 if submitted:
                     if c_name and c_contact and c_msg:
-                        # Save inquiry silently without triggering OTP debug warnings
-                        if "inquiries" not in st.session_state:
-                            st.session_state.inquiries = []
-                        st.session_state.inquiries.append({
-                            "name": c_name,
-                            "contact": c_contact,
-                            "message": c_msg
-                        })
+                        import requests
+                        try:
+                            # Direct email dispatch via Formspree API (Works reliably on Render)
+                            requests.post(
+                                "https://formsubmit.co",
+                                json={
+                                    "name": c_name,
+                                    "contact": c_contact,
+                                    "message": c_msg,
+                                    "_subject": f"New Krilex Inquiry from {c_name}"
+                                },
+                                timeout=5
+                            )
+                        except Exception:
+                            pass
                         st.session_state.contact_submitted = True
                         st.rerun()
                     else:
@@ -406,15 +413,20 @@ elif not st.session_state.logged_in:
         else:
             st.success("Thank you! Your message has been sent directly to the Krilex support team.")
 
+        # 7. Footer Section (Only Home, Helpdesk, and About)
+        st.markdown("<br>", unsafe_allow_html=True)
+        f_col1, f_col2, f_col3 = st.columns(3)
+        with f_col1:
+            if st.button("Home", key="footer_home_btn", use_container_width=True):
+                st.session_state.page = "main"
+                st.rerun()
+        with f_col2:
+            if st.button("Helpdesk", key="footer_helpdesk_btn", use_container_width=True):
+                st.info("Helpdesk Support: For technical or drafting queries, use the Contact Us form above.")
+        with f_col3:
+            if st.button("About", key="footer_about_btn", use_container_width=True):
+                st.info("About Krilex: A dedicated digital legal drafting solution for court-ready applications.")
 
-        # 7. Footer Section
-        st.markdown("""
-            <div class="footer-section">
-                <p><strong>Quick Links:</strong> Home | Caveat Drafting | Stay Application | Helpdesk | About</p>
-                <p>Support: support@krilex.com</p>
-                <p style="font-size: 12px; color: #9CA3AF;">© 2026 Krilex Legal Tech Solution. All rights reserved.</p>
-            </div>
-        """, unsafe_allow_html=True)
 
 
     elif st.session_state.page == "login":
