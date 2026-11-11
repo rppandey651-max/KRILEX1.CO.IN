@@ -1428,5 +1428,17 @@ if elapsed_time >= 2.5:
     with col_f3:
         if st.button("About", key="global_footer_about", type="tertiary", use_container_width=True):
             global_about_popup()
+    @st.dialog("About Krilex")
+    def global_about_popup():
+        st.write(
+            "Krilex is a legal drafting application engineered to simplify and digitalize procedural drafting "
+            "workflows across Indian court systems."
+        )
+        st.markdown("""
+        **Why Choose Krilex?**
+        * **Court-Ready Formatting:** Instant generation of Caveat, Stay, and Writ petitions in standard Times New Roman (Size 14).
+        * **Smart Drafting Tools:** Built-in voice dictation and auto-numbering to save manual typing hours.
+        * **100% Secure & Confidential:** Protected with two-step OTP verification so your client details stay private.
+        """)
 
                 
