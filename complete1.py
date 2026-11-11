@@ -11,7 +11,7 @@ import random
 # =======================================================
 
 # 1. Page Configuration and Theme Override (Light Mode Setup)
-st.set_page_config(page_title="KRILEX Legal Tech Innovation", layout="centered")
+st.set_page_config(page_title="KRILEX Legal Tech Innovation", layout="wide")
 
 # CSS to force Light Mode and Hide Header Elements
 st.markdown("""
@@ -111,6 +111,19 @@ st.markdown(
     .tile-green {{ background-color: rgba(232, 245, 233, 0.95) !important; border-left: 5px solid #2E7D32 !important; }}
     .tile-red {{ background-color: rgba(255, 235, 238, 0.95) !important; border-left: 5px solid #C62828 !important; }}
     .tile-blue {{ background-color: rgba(227, 242, 253, 0.95) !important; border-left: 5px solid #1565C0 !important; }}
+            .service-card {
+        background-color: #F8FAFC; padding: 20px; border-radius: 10px;
+        border: 1px solid #E2E8F0; text-align: center; height: 100%;
+    }
+    .testimonial-box {
+        background-color: #EFF6FF; padding: 15px; border-left: 5px solid #1E3A8A;
+        border-radius: 5px; margin: 15px 0;
+    }
+    .footer-section {
+        background-color: #1F2937; color: #F3F4F6; padding: 20px;
+        border-radius: 8px; margin-top: 30px; text-align: center;
+    }
+
     </style>
     """,
     unsafe_allow_html=True
@@ -249,32 +262,144 @@ if elapsed_time < 2.5:
 elif not st.session_state.logged_in:
     
     if st.session_state.page == "main":
-        if logo_base64: 
-            st.markdown(f'<div class="center-logo-container"><img src="{logo_base64}" width="160"></div>', unsafe_allow_html=True)
-        st.markdown("<h1 style='text-align: center; color: #1e3a8a;'>KRILEX Legal Tech Innovation</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #334155;'>Welcome to the Digital Legal Petition Generator.</p>", unsafe_allow_html=True)
-        st.markdown("---")
-        
-        landing_col1, landing_col2 = st.columns(2)
-        with landing_col1:
-            if st.button("🔐 Login Panel Gateway", type="primary", use_container_width=True, key="landing_login_trigger"):
-                st.session_state.page = "login"
-                st.session_state.login_otp_dispatched = False
-                st.session_state.otp_timestamp = None  # Purana time saaf kiya
+        # 1. Header Section (Persistent Home & Centered Logo)
+        col_h1, col_h2, col_h3 = st.columns([1, 2, 1])
+        with col_h1:
+            if st.button("🏠 Home", key="nav_home"):
+                st.session_state.page = "main"
                 st.rerun()
-        with landing_col2:
-            if st.button("📝 Register New Account", use_container_width=True, key="landing_register_trigger"):
-                st.session_state.page = "register"
-                st.session_state.otp_timestamp = None  # Purana time saaf kiya
-                st.rerun()
-        # --- PROMOTION WORKFLOW FEATURE: INSTANT DEMO ACCOUNT BYPASS ---
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("🚀 Explore Demo Workspace (Instant Access)", type="secondary", use_container_width=True, key="landing_demo_bypass_trigger"):
-            st.session_state.logged_in = True
-            st.session_state.username = "DemoGuest"
-            st.session_state.page = "dashboard"
-            st.toast("Authenticated via Instant Demo Clearance! 🎉")
-            st.rerun()
+        with col_h2:
+            if logo_base64:
+                st.markdown(f'<div class="center-logo-container"><img src="{logo_base64}" width="130"></div>', unsafe_allow_html=True)
+            else:
+                st.markdown("<h2 style='text-align: center; color: #1E3A8A; margin: 0;'>KRILEX</h2>", unsafe_allow_html=True)
+        with col_h3:
+            nav_c1, nav_c2 = st.columns(2)
+            with nav_c1:
+                if st.button("Register", key="nav_register", use_container_width=True):
+                    st.session_state.page = "register"
+                    st.session_state.otp_timestamp = None
+                    st.rerun()
+            with nav_c2:
+                if st.button("Login / CTA", key="nav_login", type="primary", use_container_width=True):
+                    st.session_state.page = "login"
+                    st.session_state.login_otp_dispatched = False
+                    st.session_state.otp_timestamp = None
+                    st.rerun()
+
+        st.divider()
+
+        # 2. Hero Section
+        hero_left, hero_right = st.columns([3, 2])
+        with hero_left:
+            st.title("Smart & Accurate Legal Drafting with Krilex")
+            st.write(
+                "Generate court-ready Caveat Applications, Stay Applications, and legal petitions "
+                "in minutes with live preview and Times New Roman (Size 14) PDF formatting."
+            )
+            btn1, btn2 = st.columns(2)
+            with btn1:
+                if st.button("🔐 Get Started (Login)", type="primary", use_container_width=True, key="landing_login_trigger"):
+                    st.session_state.page = "login"
+                    st.session_state.login_otp_dispatched = False
+                    st.session_state.otp_timestamp = None
+                    st.rerun()
+            with btn2:
+                if st.button("🚀 Explore Demo Workspace", use_container_width=True, key="landing_demo_bypass_trigger"):
+                    st.session_state.logged_in = True
+                    st.session_state.username = "DemoGuest"
+                    st.session_state.page = "dashboard"
+                    st.toast("Authenticated via Instant Demo Clearance!")
+                    st.rerun()
+        with hero_right:
+            st.info(
+                "**KRILEX Legal Tech Preview**\n\n"
+                "- Instant Court-Ready PDF Export\n"
+                "- Editable Permanent Legal Clauses\n"
+                "- Voice Dictation & Auto-Numbering\n"
+                "- Secure Gmail OTP Verification"
+            )
+
+        st.divider()
+
+        # 3. Services / Features Section
+        st.markdown("<h3 style='text-align: center;'>OUR SERVICES / FEATURES</h3>", unsafe_allow_html=True)
+        s_col1, s_col2, s_col3 = st.columns(3)
+        with s_col1:
+            st.markdown("""
+                <div class="service-card">
+                    <h4>📄 Caveat Applications</h4>
+                    <p>Dedicated module with permanent editable lines, advocate profile stack, and instant court-ready PDF export.</p>
+                </div>
+            """, unsafe_allow_html=True)
+        with s_col2:
+            st.markdown("""
+                <div class="service-card">
+                    <h4>🛡️ Stay Applications</h4>
+                    <p>Separate and structured workflow designed specifically for urgent stay petitions without formatting errors.</p>
+                </div>
+            """, unsafe_allow_html=True)
+        with s_col3:
+            st.markdown("""
+                <div class="service-card">
+                    <h4>⚖️ Entire Petitions & Notices</h4>
+                    <p>Quick templates for Delay Condonation, Exemption, Urgency Listing, and Writ Petitions with live preview.</p>
+                </div>
+            """, unsafe_allow_html=True)
+
+        st.divider()
+
+        # 4. About Section
+        about_img, about_text = st.columns([1, 2])
+        with about_img:
+            st.markdown("""
+                <div class="service-card">
+                    <h4>🏛️ Trusted Legal Tech</h4>
+                    <p>100% Secure & Confidential</p>
+                    <p>High Court & Supreme Court Formats</p>
+                </div>
+            """, unsafe_allow_html=True)
+        with about_text:
+            st.subheader("WHO WE ARE (About Krilex)")
+            st.write(
+                "Krilex is a specialized legal drafting application built to save time for advocates and legal professionals. "
+                "With secure Gmail OTP authentication, voice-to-text drafting, and precise court formatting, we simplify daily judicial documentation."
+            )
+
+        st.divider()
+
+        # 5. Testimonials Section
+        st.markdown("<h3 style='text-align: center;'>WHAT OUR USERS SAY</h3>", unsafe_allow_html=True)
+        st.markdown("""
+            <div class="testimonial-box">
+                <strong>"Very clean interface and accurate Caveat PDF formatting! Saves hours of manual typing."</strong> — Rahul, Legal Practitioner ⭐⭐⭐⭐⭐
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.divider()
+
+        # 6. Contact / CTA Form Section
+        st.subheader("CONTACT US")
+        with st.form("krilex_contact_form"):
+            c_name = st.text_input("Full Name")
+            c_contact = st.text_input("Email or Phone Number")
+            c_msg = st.text_area("Your Message or Query")
+            submitted = st.form_submit_button("Send Message", type="primary")
+            if submitted:
+                if c_name and c_contact and c_msg:
+                    st.success("Thank you! Your message has been received by the Krilex support team.")
+                else:
+                    st.warning("Please fill in all fields before submitting.")
+
+        # 7. Footer Section
+        st.markdown("""
+            <div class="footer-section">
+                <p><strong>Quick Links:</strong> Home | Caveat Drafting | Stay Application | Helpdesk | About</p>
+                <p>Support: support@krilex.com</p>
+                <p style="font-size: 12px; color: #9CA3AF;">© 2026 Krilex Legal Tech Solution. All rights reserved.</p>
+            </div>
+        """, unsafe_allow_html=True)
+
 
     elif st.session_state.page == "login":
         if logo_base64: 
