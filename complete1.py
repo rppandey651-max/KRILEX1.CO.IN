@@ -413,19 +413,57 @@ elif not st.session_state.logged_in:
         else:
             st.success("Thank you! Your message has been sent directly to the Krilex support team.")
 
-        # 7. Footer Section (Only Home, Helpdesk, and About)
-        st.markdown("<br>", unsafe_allow_html=True)
-        f_col1, f_col2, f_col3 = st.columns(3)
-        with f_col1:
-            if st.button("Home", key="footer_home_btn", use_container_width=True):
+        # Define Pop-up Dialogs for Helpdesk and About
+        @st.dialog("Helpdesk Support")
+        def show_helpdesk_popup():
+            st.write("Need assistance with Krilex legal drafting or account recovery? Use the Contact Us form or reach out to our support desk.")
+            st.info("Support Email: support@krilex.com")
+
+        @st.dialog("About Krilex")
+        def show_about_popup():
+            st.write(
+                "Krilex is a legal drafting application engineered to simplify and digitalize procedural drafting "
+                "workflows across Indian court systems. Generate court-ready Caveat Applications, Stay Applications, "
+                "and legal petitions in standard Times New Roman (Size 14) formatting."
+            )
+
+        # 7. Footer Section (Dark Box with Inline Pop-up Triggers)
+        st.markdown("""
+            <style>
+            .footer-bar {
+                background-color: #1F2937;
+                color: #F3F4F6;
+                padding: 15px 20px;
+                border-radius: 8px 8px 0 0;
+                margin-top: 30px;
+                text-align: center;
+            }
+            /* Style footer buttons as clean inline links inside the dark bar */
+            div[data-testid="stHorizontalBlock"].footer-links {
+                background-color: #1F2937;
+                padding: 0 20px 15px 20px;
+                border-radius: 0 0 8px 8px;
+                margin-top: -16px;
+            }
+            </style>
+            <div class="footer-bar">
+                <p style="margin: 0; font-size: 13px; color: #9CA3AF;">© 2026 Krilex Legal Tech Solution. All rights reserved.</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+        # Inline Footer Buttons (Home | Helpdesk | About)
+        f_sp1, f_c1, f_c2, f_c3, f_sp2 = st.columns([3, 1, 1, 1, 3])
+        with f_c1:
+            if st.button("Home", key="footer_pop_home", use_container_width=True):
                 st.session_state.page = "main"
                 st.rerun()
-        with f_col2:
-            if st.button("Helpdesk", key="footer_helpdesk_btn", use_container_width=True):
-                st.info("Helpdesk Support: For technical or drafting queries, use the Contact Us form above.")
-        with f_col3:
-            if st.button("About", key="footer_about_btn", use_container_width=True):
-                st.info("About Krilex: A dedicated digital legal drafting solution for court-ready applications.")
+        with f_c2:
+            if st.button("Helpdesk", key="footer_pop_helpdesk", use_container_width=True):
+                show_helpdesk_popup()
+        with f_c3:
+            if st.button("About", key="footer_pop_about", use_container_width=True):
+                show_about_popup()
+
 
 
 
