@@ -380,14 +380,17 @@ elif not st.session_state.logged_in:
 
         # 6. Contact / CTA Form Section
         st.subheader("CONTACT US")
-        with st.form("krilex_contact_form"):
+        with st.form("krilex_contact_form", clear_on_submit=True):
             c_name = st.text_input("Full Name")
             c_contact = st.text_input("Email or Phone Number")
             c_msg = st.text_area("Your Message or Query")
             submitted = st.form_submit_button("Send Message", type="primary")
             if submitted:
                 if c_name and c_contact and c_msg:
-                    st.success("Thank you! Your message has been received by the Krilex support team.")
+                    email_body = f"Name: {c_name}\nContact: {c_contact}\nMessage: {c_msg}"
+                    # Yeh message seedha aapke Gmail inbox mein bhej dega
+                    db.send_otp_via_gmail("raviraja.pandey651@gmail.com", email_body, f"New Krilex Inquiry from {c_name}")
+                    st.success("Thank you! Your message has been sent directly to the Krilex support team.")
                 else:
                     st.warning("Please fill in all fields before submitting.")
 
