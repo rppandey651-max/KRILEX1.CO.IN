@@ -1084,14 +1084,22 @@ else:
                         audio_id = hash(audio_value.getvalue())
                         if st.session_state.get("last_processed_audio") != audio_id:
                             import speech_recognition as sr
+                            import re
                             recognizer = sr.Recognizer()
                             try:
                                 with sr.AudioFile(audio_value) as source:
                                     audio_data = recognizer.record(source)
                                     spoken_text = recognizer.recognize_google(audio_data, language="en-IN")
                                     
-                                    current_txt = st.session_state.f_additional_paras.strip()
-                                    updated_txt = (current_txt + " " + spoken_text).strip()
+                                    current_txt = st.session_state.f_additional_paras.rstrip()
+                                    # Automatically detect last paragraph number and append on a new numbered line
+                                    nums = re.findall(r'(?:^|\n)(\d+)-', current_txt)
+                                    if nums:
+                                        next_num = int(nums[-1]) + 1
+                                        updated_txt = f"{current_txt}\n\n{next_num}- {spoken_text}"
+                                    else:
+                                        updated_txt = f"{current_txt} {spoken_text}".strip()
+                                        
                                     st.session_state.f_additional_paras = updated_txt
                                     st.session_state.persist_additional_paras = updated_txt
                                     st.session_state.last_processed_audio = audio_id
@@ -1129,15 +1137,16 @@ else:
                                     const match = lastLine.match(/^(\\d+)-/);
                                     if (match) {
                                         e.preventDefault();
-                                        const currentNum = parseInt(match[1]);
+                                        const currentNum = parseInt(match[1], 10);
                                         const nextNum = currentNum + 1;
                                         const insertText = `\\n${nextNum}- `;
+                                        const newValue = textBefore + insertText + textAfter;
                                         
-                                        this.value = textBefore + insertText + textAfter;
+                                        // Use native React value setter so Streamlit state locks the new line permanently
+                                        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
+                                        nativeSetter.call(this, newValue);
                                         this.selectionStart = this.selectionEnd = pos + insertText.length;
-                                        
                                         this.dispatchEvent(new Event('input', { bubbles: true }));
-                                        this.dispatchEvent(new Event('change', { bubbles: true }));
                                     }
                                 }
                             });
@@ -1146,6 +1155,7 @@ else:
                     </script>
                     """
                     secure_bridge_components.html(auto_number_js, height=0)
+
 
 
 
