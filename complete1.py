@@ -111,18 +111,18 @@ st.markdown(
     .tile-green {{ background-color: rgba(232, 245, 233, 0.95) !important; border-left: 5px solid #2E7D32 !important; }}
     .tile-red {{ background-color: rgba(255, 235, 238, 0.95) !important; border-left: 5px solid #C62828 !important; }}
     .tile-blue {{ background-color: rgba(227, 242, 253, 0.95) !important; border-left: 5px solid #1565C0 !important; }}
-    .service-card {
+    .service-card {{
         background-color: #F8FAFC; padding: 20px; border-radius: 10px;
         border: 1px solid #E2E8F0; text-align: center; height: 100%;
-    }
-    .testimonial-box {
+    }}
+    .testimonial-box {{
         background-color: #EFF6FF; padding: 15px; border-left: 5px solid #1E3A8A;
         border-radius: 5px; margin: 15px 0;
-    }
-    .footer-section {
+    }}
+    .footer-section {{
         background-color: #1F2937; color: #F3F4F6; padding: 20px;
         border-radius: 8px; margin-top: 30px; text-align: center;
-    }
+    }}
 
     </style>
     """,
