@@ -986,115 +986,117 @@ else:
             st.markdown('</div>', unsafe_allow_html=True)
 
         elif st.session_state.active_app_tile is None:
-
-        # 2. Today's Courtroom Board Banner
-           st.markdown("""
-            <div style="background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); padding: 20px; border-radius: 12px; color: white; margin-bottom: 22px; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);">
-                <h4 style="margin: 0 0 15px 0; color: #FFFFFF; font-weight: 600;">🏛️ Today's Courtroom Board</h4>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
-                    <div style="background: rgba(15, 23, 42, 0.45); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12);">
-                        <div style="font-size: 16px; font-weight: 700;">Fresh List: 2 Cases</div>
-                        <div style="font-size: 13px; color: #CBD5E1; margin-top: 4px;">(Court No. 34)</div>
-                    </div>
-                    <div style="background: rgba(255, 255, 255, 0.14); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18);">
-                        <div style="font-size: 16px; font-weight: 700;">Supplementary List: 1 Case</div>
-                        <div style="font-size: 13px; color: #E2E8F0; margin-top: 4px;">(Court No. 12)</div>
-                    </div>
-                    <div style="background: #CA8A04; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.25);">
-                        <div style="font-size: 16px; font-weight: 700; color: #FFFFFF;">Urgent Mentioning Pending (1)</div>
-                        <div style="display: inline-block; background: #FEF9C3; color: #854D0E; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 5px; margin-top: 6px;">Mentioning Slip Ready</div>
+            # 2. Today's Courtroom Board Banner
+            st.markdown("""
+                <div style="background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); padding: 20px; border-radius: 12px; color: white; margin-bottom: 22px; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);">
+                    <h4 style="margin: 0 0 15px 0; color: #FFFFFF; font-weight: 600;">🏛️ Today's Courtroom Board</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                        <div style="background: rgba(15, 23, 42, 0.45); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12);">
+                            <div style="font-size: 16px; font-weight: 700;">Fresh List: 2 Cases</div>
+                            <div style="font-size: 13px; color: #CBD5E1; margin-top: 4px;">(Court No. 34)</div>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.14); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18);">
+                            <div style="font-size: 16px; font-weight: 700;">Supplementary List: 1 Case</div>
+                            <div style="font-size: 13px; color: #E2E8F0; margin-top: 4px;">(Court No. 12)</div>
+                        </div>
+                        <div style="background: #CA8A04; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.25);">
+                            <div style="font-size: 16px; font-weight: 700; color: #FFFFFF;">Urgent Mentioning Pending (1)</div>
+                            <div style="display: inline-block; background: #FEF9C3; color: #854D0E; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 5px; margin-top: 6px;">Mentioning Slip Ready</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        """, unsafe_allow_html=True)
-        # 3. One-Tap Drafting Templates Section
-        with st.container(border=True):
-            st.markdown("#### ⚡ One-Tap Drafting Templates")
-            t_col1, t_col2, t_col3, t_col4 = st.columns(4)
+            """, unsafe_allow_html=True)
 
-            with t_col1:
-                st.markdown("""
-                    <div style="background: #1E293B; color: white; padding: 18px; border-radius: 10px; min-height: 125px; margin-bottom: 8px;">
-                        <div style="font-weight: 700; font-size: 15px;">📕 Caveat Application</div>
-                        <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">(Civil / Criminal)</div>
-                        <div style="font-size: 12px; color: #CBD5E1; margin-top: 8px;">U/S 148-A CPC & High Court Rules</div>
-                    </div>
-                """, unsafe_allow_html=True)
-                if st.button("Open Caveat ➔", key="ot_caveat", use_container_width=True, type="primary"):
+            # 3. One-Tap Drafting Templates Section
+            with st.container(border=True):
+                st.markdown("#### ⚡ One-Tap Drafting Templates")
+                t_col1, t_col2, t_col3, t_col4 = st.columns(4)
+
+                with t_col1:
+                    st.markdown("""
+                        <div style="background: #1E293B; color: white; padding: 18px; border-radius: 10px; min-height: 125px; margin-bottom: 8px;">
+                            <div style="font-weight: 700; font-size: 15px;">📕 Caveat Application</div>
+                            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">(Civil / Criminal)</div>
+                            <div style="font-size: 12px; color: #CBD5E1; margin-top: 8px;">U/S 148-A CPC & High Court Rules</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    if st.button("Open Caveat ➔", key="ot_caveat", use_container_width=True, type="primary"):
+                        st.session_state.active_app_tile = "Caveat Application"
+                        st.rerun()
+
+                with t_col2:
+                    st.markdown("""
+                        <div style="background: #0D9488; color: white; padding: 18px; border-radius: 10px; min-height: 125px; margin-bottom: 8px;">
+                            <div style="font-weight: 700; font-size: 15px;">🛡️ Stay Application</div>
+                            <div style="font-size: 11px; color: #CCFBF1; margin-top: 2px;">(Interim Relief)</div>
+                            <div style="font-size: 12px; color: #F0FDFA; margin-top: 8px;">Urgent Stay & Restraining Order Petition</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    if st.button("Open Stay ➔", key="ot_stay", use_container_width=True):
+                        st.session_state.active_app_tile = "Stay Application"
+                        st.rerun()
+
+                with t_col3:
+                    st.markdown("""
+                        <div style="background: #2563EB; color: white; padding: 18px; border-radius: 10px; min-height: 125px; margin-bottom: 8px;">
+                            <div style="font-weight: 700; font-size: 15px;">⚖️ Writ Petition</div>
+                            <div style="font-size: 11px; color: #DBEAFE; margin-top: 2px;">(Article 226 / 227)</div>
+                            <div style="font-size: 12px; color: #EFF6FF; margin-top: 8px;">Complete Writ & Miscellaneous Petition</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    if st.button("Open Writ ➔", key="ot_writ", use_container_width=True):
+                        st.session_state.active_app_tile = "Entire Petition"
+                        st.rerun()
+
+                with t_col4:
+                    st.markdown("""
+                        <div style="background: #CA8A04; color: white; padding: 18px; border-radius: 10px; min-height: 125px; margin-bottom: 8px;">
+                            <div style="font-weight: 700; font-size: 15px;">🚔 Quashing / Delay</div>
+                            <div style="font-size: 11px; color: #FEF08A; margin-top: 2px;">(482 / BNSS / Sec. 5)</div>
+                            <div style="font-size: 12px; color: #FEFCE8; margin-top: 8px;">FIR Quashing, Delay & Urgency Listing</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    if st.button("Open Quashing/Misc ➔", key="ot_quash", use_container_width=True):
+                        st.session_state.active_app_tile = "Delay Condonation Application"
+                        st.rerun()
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            # 4. 90-Day Caveat Watchlist Table
+            with st.container(border=True):
+                st.markdown("#### ⏳ 90-Day Caveat Watchlist")
+                wh1, wh2, wh3, wh4 = st.columns([3, 1.5, 1, 1.3])
+                wh1.markdown("**Entry Name**")
+                wh2.markdown("**Progress**")
+                wh3.markdown("**Status**")
+                wh4.markdown("**Action**")
+                st.divider()
+
+                # Row 1 (Expiring Soon Warning)
+                r1_c1, r1_c2, r1_c3, r1_c4 = st.columns([3, 1.5, 1, 1.3])
+                r1_c1.markdown(f"**Adv. {st.session_state.username} vs. State of U.P.** — Day 82/90 <span style='color:#DC2626; font-weight:600;'>(Expires Soon)</span>", unsafe_allow_html=True)
+                r1_c2.progress(82 / 90)
+                r1_c3.markdown("<span style='color:#16A34A; font-weight:700;'>Active</span>", unsafe_allow_html=True)
+                if r1_c4.button("One-Click Renew", key="renew_cav_1", type="primary", use_container_width=True):
                     st.session_state.active_app_tile = "Caveat Application"
                     st.rerun()
 
-            with t_col2:
-                st.markdown("""
-                    <div style="background: #0D9488; color: white; padding: 18px; border-radius: 10px; min-height: 125px; margin-bottom: 8px;">
-                        <div style="font-weight: 700; font-size: 15px;">🛡️ Stay Application</div>
-                        <div style="font-size: 11px; color: #CCFBF1; margin-top: 2px;">(Interim Relief)</div>
-                        <div style="font-size: 12px; color: #F0FDFA; margin-top: 8px;">Urgent Stay & Restraining Order Petition</div>
-                    </div>
-                """, unsafe_allow_html=True)
-                if st.button("Open Stay ➔", key="ot_stay", use_container_width=True):
-                    st.session_state.active_app_tile = "Stay Application"
+                st.markdown("<hr style='margin: 8px 0; border-color: #F1F5F9;'>", unsafe_allow_html=True)
+
+                # Row 2 (Normal Active Caveat)
+                saved_cav_party = st.session_state.get("persist_c_name", "")
+                row2_title = f"{saved_cav_party} vs. State of U.P." if (saved_cav_party and saved_cav_party != "_____________________") else "Ramesh Kumar vs. State of U.P."
+                r2_c1, r2_c2, r2_c3, r2_c4 = st.columns([3, 1.5, 1, 1.3])
+                r2_c1.markdown(f"**{row2_title}** — Day 71/90")
+                r2_c2.progress(71 / 90)
+                r2_c3.markdown("<span style='color:#2563EB; font-weight:700;'>71/90 Days</span>", unsafe_allow_html=True)
+                if r2_c4.button("One-Click Renew", key="renew_cav_2", use_container_width=True):
+                    st.session_state.active_app_tile = "Caveat Application"
                     st.rerun()
 
-            with t_col3:
-                st.markdown("""
-                    <div style="background: #2563EB; color: white; padding: 18px; border-radius: 10px; min-height: 125px; margin-bottom: 8px;">
-                        <div style="font-weight: 700; font-size: 15px;">⚖️ Writ Petition</div>
-                        <div style="font-size: 11px; color: #DBEAFE; margin-top: 2px;">(Article 226 / 227)</div>
-                        <div style="font-size: 12px; color: #EFF6FF; margin-top: 8px;">Complete Writ & Miscellaneous Petition</div>
-                    </div>
-                """, unsafe_allow_html=True)
-                if st.button("Open Writ ➔", key="ot_writ", use_container_width=True):
-                    st.session_state.active_app_tile = "Entire Petition"
-                    st.rerun()
+        else:
+            active_form = st.session_state.active_app_tile
 
-            with t_col4:
-                st.markdown("""
-                    <div style="background: #CA8A04; color: white; padding: 18px; border-radius: 10px; min-height: 125px; margin-bottom: 8px;">
-                        <div style="font-weight: 700; font-size: 15px;">🚔 Quashing / Delay</div>
-                        <div style="font-size: 11px; color: #FEF08A; margin-top: 2px;">(482 / BNSS / Sec. 5)</div>
-                        <div style="font-size: 12px; color: #FEFCE8; margin-top: 8px;">FIR Quashing, Delay & Urgency Listing</div>
-                    </div>
-                """, unsafe_allow_html=True)
-                if st.button("Open Quashing/Misc ➔", key="ot_quash", use_container_width=True):
-                    st.session_state.active_app_tile = "Delay Condonation Application"
-                    st.rerun()
-
-        st.markdown("<br>", unsafe_allow_html=True)
-        # 4. 90-Day Caveat Watchlist Table
-        with st.container(border=True):
-            st.markdown("#### ⏳ 90-Day Caveat Watchlist")
-            wh1, wh2, wh3, wh4 = st.columns([3, 1.5, 1, 1.3])
-            wh1.markdown("**Entry Name**")
-            wh2.markdown("**Progress**")
-            wh3.markdown("**Status**")
-            wh4.markdown("**Action**")
-            st.divider()
-
-            # Row 1 (Expiring Soon Warning)
-            r1_c1, r1_c2, r1_c3, r1_c4 = st.columns([3, 1.5, 1, 1.3])
-            r1_c1.markdown(f"**Adv. {st.session_state.username} vs. State of U.P.** — Day 82/90 <span style='color:#DC2626; font-weight:600;'>(Expires Soon)</span>", unsafe_allow_html=True)
-            r1_c2.progress(82 / 90)
-            r1_c3.markdown("<span style='color:#16A34A; font-weight:700;'>Active</span>", unsafe_allow_html=True)
-            if r1_c4.button("One-Click Renew", key="renew_cav_1", type="primary", use_container_width=True):
-                st.session_state.active_app_tile = "Caveat Application"
-                st.rerun()
-
-            st.markdown("<hr style='margin: 8px 0; border-color: #F1F5F9;'>", unsafe_allow_html=True)
-
-            # Row 2 (Normal Active Caveat)
-            saved_cav_party = st.session_state.get("persist_c_name", "")
-            row2_title = f"{saved_cav_party} vs. State of U.P." if (saved_cav_party and saved_cav_party != "_____________________") else "Ramesh Kumar vs. State of U.P."
-            r2_c1, r2_c2, r2_c3, r2_c4 = st.columns([3, 1.5, 1, 1.3])
-            r2_c1.markdown(f"**{row2_title}** — Day 71/90")
-            r2_c2.progress(71 / 90)
-            r2_c3.markdown("<span style='color:#2563EB; font-weight:700;'>71/90 Days</span>", unsafe_allow_html=True)
-            if r2_c4.button("One-Click Renew", key="renew_cav_2", use_container_width=True):
-                st.session_state.active_app_tile = "Caveat Application"
-                st.rerun()
-
-         else:
-             active_form = st.session_state.active_app_tile
 
 
             # Global sub-page routing state parameter initialization for document layout toggle
