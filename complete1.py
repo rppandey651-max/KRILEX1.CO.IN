@@ -941,16 +941,14 @@ else:
                 col_left_form, col_right_form = st.columns(2, gap="large")
                 
                 # --- LEFT COLUMN: CASE INFORMATION & DISTRICT PARAMETERS ---
-                # --- LEFT COLUMN: CASE INFORMATION & DISTRICT PARAMETERS ---
                 with col_left_form:
                     st.markdown("##### 📍 Case Information Parameters")
                     
-                    # CSS injection to fix calendar popup clipping & show Month/Year navigation arrows clearly
                     st.markdown("""
                         <style>
                         div[data-baseweb="popover"] {
                             z-index: 999999 !important;
-                            top: 120px !important; /* Calendar popup ko niche khiskayega taaki upar ka arrow header na kate */
+                            top: 120px !important;
                         }
                         div[data-baseweb="calendar"] header {
                             visibility: visible !important;
@@ -967,7 +965,6 @@ else:
                         }
                         </style>
                     """, unsafe_allow_html=True)
-
                     
                     with st.container(border=True):
                         district_val = st.text_input("📍 FORUM JURISDICTION DISTRICT", placeholder="e.g. PRAYAGRAJ", key="f_district", value="" if district_mapped == "_____________________" else district_mapped).upper()
@@ -978,43 +975,45 @@ else:
                              "Section 151 of Civil Procedure Code (Civil Misc.)"], 
                             key="f_prov"
                         )
-                        # Added explicit format parameter for strict DD/MM/YYYY alignment
-                        import datetime
-
-                        # Date state initialize karein
-                        if "order_date_state" not in st.session_state:
-                            st.session_state.order_date_state = datetime.date.today()
-
-                        st.markdown(
-                            "<p style='font-size: 14px; font-weight: 500; margin-bottom: 4px;'>📅 SELECT ORDER DATE (CHALLENGED ORDER)</p>",
-                            unsafe_allow_html=True
+                        order_date_val = st.date_input(
+                            "📅 SELECT ORDER DATE (CHALLENGED ORDER)", 
+                            key="f_order_date",
+                            format="DD/MM/YYYY"
                         )
-
-                        # Date input ke saath Left/Right Arrow buttons
-                        d_col1, d_col2, d_col3 = st.columns([6, 1, 1], vertical_alignment="center")
-                        
-                        with d_col1:
-                            order_date_val = st.date_input(
-                                "SELECT ORDER DATE (CHALLENGED ORDER)",
-                                value=st.session_state.order_date_state,
-                                key="f_order_date",
-                                format="DD/MM/YYYY",
-                                label_visibility="collapsed"
-                            )
-                            st.session_state.order_date_state = order_date_val
-
-                        with d_col2:
-                            if st.button("◀", key="prev_order_date", help="1 Din Peeche", use_container_width=True):
-                                st.session_state.order_date_state -= datetime.timedelta(days=1)
-                                st.rerun()
-
-                        with d_col3:
-                            if st.button("▶", key="next_order_date", help="1 Din Aage", use_container_width=True):
-                                st.session_state.order_date_state += datetime.timedelta(days=1)
-                                st.rerun()
-
-                        formatted_order_date = st.session_state.order_date_state.strftime("%d-%m-%Y")
+                        formatted_order_date = order_date_val.strftime("%d-%m-%Y")
                         st.session_state.persist_order_date = formatted_order_date
+
+                    # 🎯 NEW: CASE CRIME DETAILS BOX (Bilkul Case Information Parameters ke neeche)
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    st.markdown("##### 🚔 Case Crime Details")
+                    with st.container(border=True):
+                        c_col1, c_col2 = st.columns(2)
+                        with c_col1:
+                            case_crime_no = st.text_input(
+                                "Case Crime No. & Year",
+                                placeholder="e.g. 0145 / 2026",
+                                value=st.session_state.get("persist_crime_no", ""),
+                                key="f_crime_no"
+                            ).upper()
+                            police_station = st.text_input(
+                                "Police Station (Thana)",
+                                placeholder="e.g. COLONELGANJ",
+                                value=st.session_state.get("persist_ps", ""),
+                                key="f_police_station"
+                            ).upper()
+                        with c_col2:
+                            under_sections = st.text_input(
+                                "Under Sections",
+                                placeholder="e.g. 115(2), 352 BNS",
+                                value=st.session_state.get("persist_sections", ""),
+                                key="f_under_sections"
+                            ).upper()
+                            crime_district = st.text_input(
+                                "Crime District",
+                                placeholder="e.g. PRAYAGRAJ",
+                                value=st.session_state.get("persist_crime_dist", ""),
+                                key="f_crime_dist"
+                            ).upper()
 
 
 
@@ -1227,6 +1226,11 @@ else:
                         st.session_state.persist_provision = legal_provision
                         st.session_state.persist_order_date = formatted_order_date
                         st.session_state.persist_additional_paras = additional_paras_input
+                        st.session_state.persist_crime_no = case_crime_no
+                        st.session_state.persist_ps = police_station
+                        st.session_state.persist_sections = under_sections
+                        st.session_state.persist_crime_dist = crime_district
+
                         if active_form == "Caveat Application":
                             st.session_state.persist_c_name = caveator_name_only
                             st.session_state.persist_c_addr = caveator_address_only
