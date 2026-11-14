@@ -945,17 +945,29 @@ else:
                 with col_left_form:
                     st.markdown("##### 📍 Case Information Parameters")
                     
-                    # CSS injection to force the date picker calendar popup to render on top without getting cut off
+                    # CSS injection to fix calendar popup clipping & show Month/Year navigation arrows clearly
                     st.markdown("""
                         <style>
                         div[data-baseweb="popover"] {
                             z-index: 999999 !important;
+                            top: 120px !important; /* Calendar popup ko niche khiskayega taaki upar ka arrow header na kate */
+                        }
+                        div[data-baseweb="calendar"] header {
+                            visibility: visible !important;
+                            display: flex !important;
+                            background-color: #f8fafc !important;
+                            padding: 8px !important;
+                        }
+                        div[data-baseweb="calendar"] button svg {
+                            fill: #000000 !important;
+                            visibility: visible !important;
                         }
                         div[data-testid="stContainer"] {
                             overflow: visible !important;
                         }
                         </style>
                     """, unsafe_allow_html=True)
+
                     
                     with st.container(border=True):
                         district_val = st.text_input("📍 FORUM JURISDICTION DISTRICT", placeholder="e.g. PRAYAGRAJ", key="f_district", value="" if district_mapped == "_____________________" else district_mapped).upper()
