@@ -1663,28 +1663,55 @@ IN THE MATTER OF:
                     unsafe_allow_html=True
                 )
 
-                html_formatted_content = f"""
-                <html>
-                <head>
-                    <style>
-                        @page {{ size: A4; margin: 1in; }}
-                        body {{ font-family: 'Times New Roman', Times, serif; font-size: 14pt; padding: 20px; line-height: 2.0; white-space: pre-wrap; color: #000000; }}
-                    </style>
-                </head>
-                <body>{preview_body_html}</body>
-                </html>
-                """
+                # =======================================================
+                # REAL PDF GENERATOR (TIMES NEW ROMAN 14PT, 1-INCH MARGIN)
+                # =======================================================
+                try:
+                    from fpdf import FPDF
 
+                    pdf = FPDF(format="A4", unit="mm")
+                    pdf.set_margins(25.4, 25.4, 25.4)  # 1 Inch Court Margin
+                    pdf.set_auto_page_break(auto=True, margin=25.4)
+                    pdf.add_page()
 
-                with act_col2:
-                    st.download_button(
-                        label="📥 Download Generated Petition (PDF)",
-                        data=html_formatted_content,
-                        file_name=f"{active_form.lower().replace(' ', '_')}_final.pdf",
-                        mime="text/html",
-                        use_container_width=True,
-                        type="primary"
+                    # Special characters ko safe text me badlein taaki PDF crash na ho
+                    clean_text = (
+                        final_document_string.replace("–", "-")
+                        .replace("—", "-")
+                        .replace("`", "'")
+                        .replace("’", "'")
+                        .replace("“", '"')
+                        .replace("”", '"')
                     )
+                    safe_text = clean_text.encode("latin-1", "replace").decode("latin-1")
+
+                    for line in safe_text.split("\n"):
+                        stripped = line.strip()
+                        if any(b_text in stripped for b_text in bold_lines) and stripped != "":
+                            pdf.set_font("Times", style="B", size=14)
+                        else:
+                            pdf.set_font("Times", style="", size=14)
+
+                        if stripped == "":
+                            pdf.ln(6)
+                        else:
+                            pdf.multi_cell(0, 8, text=line)
+
+                    real_pdf_bytes = bytes(pdf.output())
+
+                    with act_col2:
+                        st.download_button(
+                            label="📥 Download Generated Petition (PDF)",
+                            data=real_pdf_bytes,
+                            file_name=f"{active_form.lower().replace(' ', '_')}_final.pdf",
+                            mime="application/pdf",
+                            use_container_width=True,
+                            type="primary"
+                        )
+                except Exception as pdf_err:
+                    with act_col2:
+                        st.error(f"⚠️ PDF Error: {pdf_err} (Check if fpdf2 is in requirements.txt)")
+
 # =======================================================
 # GLOBAL PERSISTENT FOOTER (APPEARS ON EVERY PAGE)
 # =======================================================
