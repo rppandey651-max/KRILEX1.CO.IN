@@ -988,7 +988,7 @@ else:
         elif st.session_state.active_app_tile is None:
 
         # 2. Today's Courtroom Board Banner
-        st.markdown("""
+           st.markdown("""
             <div style="background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); padding: 20px; border-radius: 12px; color: white; margin-bottom: 22px; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);">
                 <h4 style="margin: 0 0 15px 0; color: #FFFFFF; font-weight: 600;">🏛️ Today's Courtroom Board</h4>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
