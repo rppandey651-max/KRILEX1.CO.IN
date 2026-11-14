@@ -1089,13 +1089,13 @@ else:
             r2_c1.markdown(f"**{row2_title}** — Day 71/90")
             r2_c2.progress(71 / 90)
             r2_c3.markdown("<span style='color:#2563EB; font-weight:700;'>71/90 Days</span>", unsafe_allow_html=True)
-        if 
-            r2_c4.button("One-Click Renew", key="renew_cav_2", use_container_width=True):
+            if r2_c4.button("One-Click Renew", key="renew_cav_2", use_container_width=True):
                 st.session_state.active_app_tile = "Caveat Application"
                 st.rerun()
 
         else:
             active_form = st.session_state.active_app_tile
+
 
 
             # Global sub-page routing state parameter initialization for document layout toggle
