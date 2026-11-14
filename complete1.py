@@ -871,18 +871,122 @@ else:
 
     st.markdown("<hr style='margin: 10px 0 20px 0; border-color: #E2E8F0;'>", unsafe_allow_html=True)
 
-    if st.session_state.footer_page is not None:
-        st.markdown('<div class="workstation-container">', unsafe_allow_html=True)
-        if st.session_state.footer_page == "about":
-            st.markdown("### 🏛️ About Krilex Legal Tech")
-            st.write("Krilex is an advanced legal-tech innovation platform engineered to simplify procedural drafting workflows across Indian court systems.")
-        elif st.session_state.footer_page == "helpdesk":
-            st.markdown("### 🛠️ Helpdesk Support")
-            st.text_input("Enter your query details", placeholder="Describe the layout issue...")
-            st.button("Submit Report")
-        st.markdown('</div>', unsafe_allow_html=True)
+    if "sidebar_tab" not in st.session_state:
+        st.session_state.sidebar_tab = "dashboard"
 
-    elif st.session_state.active_app_tile is None:
+    rail_col, main_col = st.columns([0.55, 9.45], gap="medium")
+
+    with rail_col:
+        st.markdown("""
+            <style>
+            div[data-testid="stColumn"]:has(.left-rail-marker) {
+                background-color: #FFFFFF !important;
+                border-radius: 14px !important;
+                padding: 14px 6px !important;
+                border: 1px solid #E2E8F0 !important;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.04) !important;
+                min-height: 76vh !important;
+            }
+            div[data-testid="stColumn"]:has(.left-rail-marker) button {
+                border: none !important;
+                background: transparent !important;
+                font-size: 20px !important;
+                padding: 10px 0px !important;
+                border-radius: 10px !important;
+                color: #475569 !important;
+                box-shadow: none !important;
+                margin-bottom: 6px !important;
+            }
+            div[data-testid="stColumn"]:has(.left-rail-marker) button:hover {
+                background-color: #EFF6FF !important;
+                color: #1D4ED8 !important;
+            }
+            div[data-testid="stColumn"]:has(.left-rail-marker) button[kind="primary"] {
+                background-color: #EFF6FF !important;
+                color: #1D4ED8 !important;
+                border-left: 3px solid #1D4ED8 !important;
+            }
+            </style>
+            <div class="left-rail-marker"></div>
+        """, unsafe_allow_html=True)
+
+        if st.button("⊞", key="rail_dash", help="Dashboard Home", type="primary" if st.session_state.sidebar_tab == "dashboard" else "secondary", use_container_width=True):
+            st.session_state.sidebar_tab = "dashboard"
+            st.session_state.active_app_tile = None
+            st.session_state.footer_page = None
+            st.rerun()
+
+        if st.button("👥", key="rail_clients", help="Client Directory", type="primary" if st.session_state.sidebar_tab == "clients" else "secondary", use_container_width=True):
+            st.session_state.sidebar_tab = "clients"
+            st.session_state.active_app_tile = None
+            st.rerun()
+
+        if st.button("📄", key="rail_drafts", help="Saved Drafts", type="primary" if st.session_state.sidebar_tab == "drafts" else "secondary", use_container_width=True):
+            st.session_state.sidebar_tab = "drafts"
+            st.session_state.active_app_tile = None
+            st.rerun()
+
+        if st.button("📋", key="rail_causelist", help="Daily Cause List", type="primary" if st.session_state.sidebar_tab == "causelist" else "secondary", use_container_width=True):
+            st.session_state.sidebar_tab = "causelist"
+            st.session_state.active_app_tile = None
+            st.rerun()
+
+        if st.button("💼", key="rail_briefs", help="Case Briefs", type="primary" if st.session_state.sidebar_tab == "briefs" else "secondary", use_container_width=True):
+            st.session_state.sidebar_tab = "briefs"
+            st.session_state.active_app_tile = None
+            st.rerun()
+
+        if st.button("⚙️", key="rail_settings", help="Advocate Profile & Settings", type="primary" if st.session_state.sidebar_tab == "settings" else "secondary", use_container_width=True):
+            st.session_state.sidebar_tab = "settings"
+            st.session_state.active_app_tile = None
+            st.rerun()
+
+        st.markdown("<div style='height: 140px;'></div>", unsafe_allow_html=True)
+
+        if st.button("↪️", key="rail_logout", help="Logout", use_container_width=True):
+            st.session_state.logged_in = False
+            st.session_state.page = "main"
+            st.rerun()
+
+    with main_col:
+        if st.session_state.sidebar_tab == "clients":
+            st.markdown('<div class="dash-section-box">', unsafe_allow_html=True)
+            st.markdown("### 👥 Client & Party Directory")
+            st.info("Saved Caveators, Petitioners, and Opposite Parties from your drafts will appear here.")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        elif st.session_state.sidebar_tab == "drafts":
+            st.markdown('<div class="dash-section-box">', unsafe_allow_html=True)
+            st.markdown("### 📄 Saved Legal Drafts")
+            st.write(f"**1. Caveat Application** — {st.session_state.get('persist_c_name', 'Draft Ready')}")
+            if st.button("Open Latest Caveat Draft", type="primary"):
+                st.session_state.sidebar_tab = "dashboard"
+                st.session_state.active_app_tile = "Caveat Application"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        elif st.session_state.sidebar_tab == "causelist":
+            st.markdown('<div class="dash-section-box">', unsafe_allow_html=True)
+            st.markdown("### 📋 Daily Court Cause List")
+            st.write("• **Court No. 34:** Fresh List — 2 Cases")
+            st.write("• **Court No. 12:** Supplementary List — 1 Case")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        elif st.session_state.sidebar_tab == "briefs":
+            st.markdown('<div class="dash-section-box">', unsafe_allow_html=True)
+            st.markdown("### 💼 Case Briefs & Notes")
+            st.text_area("Quick Courtroom Notes", placeholder="Write case hearing notes here...")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        elif st.session_state.sidebar_tab == "settings":
+            st.markdown('<div class="dash-section-box">', unsafe_allow_html=True)
+            st.markdown("### ⚙️ Advocate Profile Settings")
+            st.text_input("Advocate Name", value=f"Adv. {st.session_state.username}")
+            st.text_input("Default Court", value=st.session_state.selected_court)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        elif st.session_state.active_app_tile is None:
+
         # 2. Today's Courtroom Board Banner
         st.markdown("""
             <div style="background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); padding: 20px; border-radius: 12px; color: white; margin-bottom: 22px; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);">
