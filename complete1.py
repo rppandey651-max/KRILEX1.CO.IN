@@ -983,38 +983,102 @@ else:
                         formatted_order_date = order_date_val.strftime("%d-%m-%Y")
                         st.session_state.persist_order_date = formatted_order_date
 
-                    # 🎯 NEW: CASE CRIME DETAILS BOX (Bilkul Case Information Parameters ke neeche)
+                    # 🎯 UPDATED: DYNAMIC CASE CRIME DETAILS BOX WITH NATURE, RELIEF DROPDOWN & PLUS BUTTON
                     st.markdown("<br>", unsafe_allow_html=True)
                     st.markdown("##### 🚔 Case Crime Details")
-                    with st.container(border=True):
-                        c_col1, c_col2 = st.columns(2)
-                        with c_col1:
-                            case_crime_no = st.text_input(
-                                "Case Crime No. & Year",
-                                placeholder="e.g. 0145 / 2026",
-                                value=st.session_state.get("persist_crime_no", ""),
-                                key="f_crime_no"
-                            ).upper()
-                            police_station = st.text_input(
-                                "Police Station (Thana)",
-                                placeholder="e.g. COLONELGANJ",
-                                value=st.session_state.get("persist_ps", ""),
-                                key="f_police_station"
-                            ).upper()
-                        with c_col2:
-                            under_sections = st.text_input(
-                                "Under Sections",
-                                placeholder="e.g. 115(2), 352 BNS",
-                                value=st.session_state.get("persist_sections", ""),
-                                key="f_under_sections"
-                            ).upper()
-                            crime_district = st.text_input(
-                                "Crime District",
-                                placeholder="e.g. PRAYAGRAJ",
-                                value=st.session_state.get("persist_crime_dist", ""),
-                                key="f_crime_dist"
-                            ).upper()
 
+                    if "crime_count" not in st.session_state:
+                        st.session_state.crime_count = 1
+
+                    crime_details_list = []
+
+                    with st.container(border=True):
+                        for idx in range(st.session_state.crime_count):
+                            if st.session_state.crime_count > 1:
+                                st.markdown(f"**🔹 Crime Detail No. {idx+1}**")
+
+                            c_col1, c_col2 = st.columns(2)
+                            with c_col1:
+                                crime_no_val = st.text_input(
+                                    "Case Crime No. & Year",
+                                    placeholder="e.g. 0145 / 2026",
+                                    value=st.session_state.get(f"persist_crime_no_{idx}", ""),
+                                    key=f"f_crime_no_{idx}"
+                                ).upper()
+
+                                ps_val = st.text_input(
+                                    "Police Station (Thana)",
+                                    placeholder="e.g. COLONELGANJ",
+                                    value=st.session_state.get(f"persist_ps_{idx}", ""),
+                                    key=f"f_police_station_{idx}"
+                                ).upper()
+
+                                nature_val = st.selectbox(
+                                    "Nature of Case / Offence",
+                                    [
+                                        "Criminal / FIR",
+                                        "Cognizable Offence",
+                                        "Non-Cognizable (NCR)",
+                                        "Civil Nature / Dispute",
+                                        "Matrimonial / Domestic",
+                                        "Financial / Fraud",
+                                        "Other"
+                                    ],
+                                    key=f"f_crime_nature_{idx}"
+                                )
+
+                            with c_col2:
+                                sections_val = st.text_input(
+                                    "Under Sections",
+                                    placeholder="e.g. 115(2), 352 BNS",
+                                    value=st.session_state.get(f"persist_sections_{idx}", ""),
+                                    key=f"f_under_sections_{idx}"
+                                ).upper()
+
+                                dist_val = st.text_input(
+                                    "Crime District",
+                                    placeholder="e.g. PRAYAGRAJ",
+                                    value=st.session_state.get(f"persist_crime_dist_{idx}", ""),
+                                    key=f"f_crime_dist_{idx}"
+                                ).upper()
+
+                                writ_relief_val = st.selectbox(
+                                    "Relief / Writ Type",
+                                    [
+                                        "Quashing of FIR / Proceedings",
+                                        "Mandamus (Fair Investigation / Protection)",
+                                        "Stay of Arrest",
+                                        "Certiorari",
+                                        "Prohibition",
+                                        "Habeas Corpus",
+                                        "Anticipatory / Regular Bail"
+                                    ],
+                                    key=f"f_writ_relief_{idx}"
+                                )
+
+                            # Session mein save rakhein taaki refresh par data na ude
+                            st.session_state[f"persist_crime_no_{idx}"] = crime_no_val
+                            st.session_state[f"persist_ps_{idx}"] = ps_val
+                            st.session_state[f"persist_sections_{idx}"] = sections_val
+                            st.session_state[f"persist_crime_dist_{idx}"] = dist_val
+
+                            if crime_no_val or ps_val or sections_val:
+                                crime_details_list.append({
+                                    "crime_no": crime_no_val,
+                                    "sections": sections_val,
+                                    "ps": ps_val,
+                                    "district": dist_val,
+                                    "nature": nature_val,
+                                    "relief": writ_relief_val
+                                })
+
+                            if idx < st.session_state.crime_count - 1:
+                                st.markdown("---")
+
+                        # ➕ Plus button to add another Crime Detail entry
+                        if st.button("➕ Add Another Crime Detail", key="add_crime_detail_btn", use_container_width=True):
+                            st.session_state.crime_count += 1
+                            st.rerun()
 
 
                 # --- RIGHT COLUMN: CAVEATOR OR PETITIONER DETAILS ---
@@ -1226,10 +1290,8 @@ else:
                         st.session_state.persist_provision = legal_provision
                         st.session_state.persist_order_date = formatted_order_date
                         st.session_state.persist_additional_paras = additional_paras_input
-                        st.session_state.persist_crime_no = case_crime_no
-                        st.session_state.persist_ps = police_station
-                        st.session_state.persist_sections = under_sections
-                        st.session_state.persist_crime_dist = crime_district
+                        st.session_state.persist_crime_list = crime_details_list
+
 
                         if active_form == "Caveat Application":
                             st.session_state.persist_c_name = caveator_name_only
