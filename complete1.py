@@ -123,8 +123,7 @@ st.markdown(
         background-color: #1F2937; color: #F3F4F6; padding: 20px;
         border-radius: 8px; margin-top: 30px; text-align: center;
     }}
-    .cmd-welcome-banner 
-    {
+    .cmd-welcome-banner {{
         background: linear-gradient(90deg, #0F294A 0%, #1E3A8A 100%);
         color: #FFFFFF;
         padding: 16px 24px;
@@ -134,40 +133,39 @@ st.markdown(
         font-weight: 600;
         margin: 12px 0 20px 0;
         box-shadow: 0 4px 12px rgba(15, 41, 74, 0.18);
-    }
-    .kpi-card 
-    {
+    }}
+    .kpi-card {{
         background: #FFFFFF;
         border: 1px solid #E2E8F0;
         border-radius: 10px;
         padding: 16px 18px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.04);
         height: 100%;
-    }
-    .kpi-green { border-top: 4px solid #16A34A; }
-    .kpi-blue { border-top: 4px solid #2563EB; }
-    .kpi-amber { border-top: 4px solid #D97706; }
-    .kpi-purple { border-top: 4px solid #7C3AED; }
-    .tpl-card {
+    }}
+    .kpi-green {{ border-top: 4px solid #16A34A; }}
+    .kpi-blue {{ border-top: 4px solid #2563EB; }}
+    .kpi-amber {{ border-top: 4px solid #D97706; }}
+    .kpi-purple {{ border-top: 4px solid #7C3AED; }}
+    .tpl-card {{
         background: #FFFFFF;
         border: 1px solid #CBD5E1;
         border-radius: 12px;
         padding: 18px;
         margin-bottom: 10px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
-    .badge-pill 
-    {
+    }}
+    .badge-pill {{
         display: inline-block;
         padding: 3px 10px;
         border-radius: 12px;
         font-size: 11px;
         font-weight: 700;
         float: right;
-    }
-    .badge-green { background: #DCFCE7; color: #166534; }
-    .badge-amber { background: #FEF3C7; color: #92400E; }
-    .badge-blue { background: #DBEAFE; color: #1E40AF; }
+    }}
+    .badge-green {{ background: #DCFCE7; color: #166534; }}
+    .badge-amber {{ background: #FEF3C7; color: #92400E; }}
+    .badge-blue {{ background: #DBEAFE; color: #1E40AF; }}
+                  
     </style>
     """,
     unsafe_allow_html=True
