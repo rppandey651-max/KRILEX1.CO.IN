@@ -967,13 +967,43 @@ else:
                             key="f_prov"
                         )
                         # Added explicit format parameter for strict DD/MM/YYYY alignment
-                        order_date_val = st.date_input(
-                            "📅 SELECT ORDER DATE (CHALLENGED ORDER)", 
-                            key="f_order_date",
-                            format="DD/MM/YYYY"
+                        import datetime
+
+                        # Date state initialize karein
+                        if "order_date_state" not in st.session_state:
+                            st.session_state.order_date_state = datetime.date.today()
+
+                        st.markdown(
+                            "<p style='font-size: 14px; font-weight: 500; margin-bottom: 4px;'>📅 SELECT ORDER DATE (CHALLENGED ORDER)</p>",
+                            unsafe_allow_html=True
                         )
-                        formatted_order_date = order_date_val.strftime("%d-%m-%Y")
+
+                        # Date input ke saath Left/Right Arrow buttons
+                        d_col1, d_col2, d_col3 = st.columns([6, 1, 1], vertical_alignment="center")
+                        
+                        with d_col1:
+                            order_date_val = st.date_input(
+                                "SELECT ORDER DATE (CHALLENGED ORDER)",
+                                value=st.session_state.order_date_state,
+                                key="f_order_date",
+                                format="DD/MM/YYYY",
+                                label_visibility="collapsed"
+                            )
+                            st.session_state.order_date_state = order_date_val
+
+                        with d_col2:
+                            if st.button("◀", key="prev_order_date", help="1 Din Peeche", use_container_width=True):
+                                st.session_state.order_date_state -= datetime.timedelta(days=1)
+                                st.rerun()
+
+                        with d_col3:
+                            if st.button("▶", key="next_order_date", help="1 Din Aage", use_container_width=True):
+                                st.session_state.order_date_state += datetime.timedelta(days=1)
+                                st.rerun()
+
+                        formatted_order_date = st.session_state.order_date_state.strftime("%d-%m-%Y")
                         st.session_state.persist_order_date = formatted_order_date
+
 
 
                 # --- RIGHT COLUMN: CAVEATOR OR PETITIONER DETAILS ---
