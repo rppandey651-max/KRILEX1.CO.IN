@@ -1014,12 +1014,17 @@ else:
                                 ).upper()
 
                             with c_col2:
-                                crime_year_val = st.text_input(
+                                year_options = [str(y) for y in range(2026, 1989, -1)]
+                                saved_year = st.session_state.get(f"persist_crime_year_{idx}", "2026")
+                                default_year_idx = year_options.index(saved_year) if saved_year in year_options else 0
+
+                                crime_year_val = st.selectbox(
                                     "Crime Year",
-                                    placeholder="e.g. 2026",
-                                    max_chars=4,
-                                    value=st.session_state.get(f"persist_crime_year_{idx}", ""),
+                                    options=year_options,
+                                    index=default_year_idx,
                                     key=f"f_crime_year_{idx}"
+                                )
+
                                 ).strip()
 
                                 nature_val = st.selectbox(
@@ -1042,11 +1047,6 @@ else:
                                 [
                                     "Quashing of FIR / Proceedings",
                                     "Mandamus (Fair Investigation / Protection)",
-                                    "Stay of Arrest",
-                                    "Certiorari",
-                                    "Prohibition",
-                                    "Habeas Corpus",
-                                    "Anticipatory / Regular Bail"
                                 ],
                                 key=f"f_writ_relief_{idx}"
                             )
