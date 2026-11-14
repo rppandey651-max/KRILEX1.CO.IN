@@ -989,8 +989,9 @@ else:
                 st.session_state.active_app_tile = "Caveat Application"
                 st.rerun()
 
-        else:
+    else:
             active_form = st.session_state.active_app_tile
+
 
             # Global sub-page routing state parameter initialization for document layout toggle
             if "canvas_sub_page" not in st.session_state:
