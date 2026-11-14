@@ -936,7 +936,21 @@ else:
                 """, unsafe_allow_html=True)
 
                 st.markdown(f"### 📝 Drafting Input Form: **{active_form}**")
-                
+            # --- TOP SEPARATE BOX FOR CIVIL / CRIMINAL (CAVEAT APPLICATION) ---
+                if active_form == "Caveat Application":
+                    st.markdown("##### ⚖️ Caveat Case Category")
+                    with st.container(border=True):
+                        saved_cat = st.session_state.get("persist_caveat_category", "Civil")
+                        caveat_category = st.radio(
+                            "Select Caveat Application Type:",
+                            options=["Civil", "Criminal"],
+                            index=0 if saved_cat == "Civil" else 1,
+                            horizontal=True,
+                            key="f_caveat_category"
+                        )
+                        st.session_state.persist_caveat_category = caveat_category
+                    st.markdown("<br>", unsafe_allow_html=True)
+
                 # Create an expanded 50/50 split column layout grid structure 
                 col_left_form, col_right_form = st.columns(2, gap="large")
                 
@@ -1286,6 +1300,7 @@ else:
 
 
                         if active_form == "Caveat Application":
+                            st.session_state.persist_caveat_category = caveat_category
                             st.session_state.persist_c_name = caveator_name_only
                             st.session_state.persist_c_addr = caveator_address_only
                             st.session_state.persist_adv_name = "\n".join(adv_names_list)
@@ -1344,19 +1359,25 @@ else:
                     provision_text = provision_mapped.upper()
                 
                 # 🚀 FIXED: Structured spaces injected to center titles while maintaining left-aligned bullet paragraphs
+                caveat_cat_mapped = st.session_state.get("persist_caveat_category", "Civil")
+                caveat_title_line = f"{caveat_cat_mapped} Misc. Caveat Application no.      of 2026"
+                misc_petition_line = f"Misc. Petition {caveat_cat_mapped} NO-        of 2026 ({caveat_cat_mapped.lower()})"
+
                 if active_form == "Caveat Application":
                     final_document_string = f"""                               IN THE HIGH COURT OF JUDICATURE AT ALLAHABAD
                                                       ***********
-                                      Civil Misc. Caveat Application no.      of 2026
+                                      {caveat_title_line}
                 (Under section 148-A C.P.C. read with Rule 5 Chapter 22 of High Court Rules)
 
                                                       On behalf of
                                         {c_name_mapped}    ---- Applicant
 
-                                      Misc. Petition Civil NO-        of 2026 (civil)
+                                      {misc_petition_line}
                                                       (U/A {provision_text})
 
                                                    DISTRICT – {district_mapped}
+...
+
 
 {exp_p_compiled}
 - - - - - - - - - - - - - - - - - - - - ---- Proposed Petitioner/plaintiff
@@ -1404,8 +1425,9 @@ IN THE MATTER OF:
                 bold_lines = [
                     "IN THE HIGH COURT OF JUDICATURE AT ALLAHABAD",
                     "***********",
-                    "Civil Misc. Caveat Application no.      of 2026"
+                    caveat_title_line
                 ]
+
 
                 formatted_html_lines = []
                 for line in final_document_string.split("\n"):
