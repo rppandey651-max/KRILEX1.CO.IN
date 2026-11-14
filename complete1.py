@@ -1093,7 +1093,7 @@ else:
                 st.session_state.active_app_tile = "Caveat Application"
                 st.rerun()
 
-    else:
+        else:
             active_form = st.session_state.active_app_tile
 
 
