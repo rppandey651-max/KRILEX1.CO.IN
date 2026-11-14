@@ -1025,8 +1025,6 @@ else:
                                     key=f"f_crime_year_{idx}"
                                 )
 
-                                ).strip()
-
                                 nature_val = st.selectbox(
                                     "Nature of Case / Offence",
                                     [
