@@ -1400,20 +1400,53 @@ IN THE MATTER OF:
                         st.rerun()
                 
                 st.markdown("---")
-                st.code(final_document_string, language="text")
+                # Highlighted lines ko bold karne ke liye HTML-formatted string
+                bold_lines = [
+                    "IN THE HIGH COURT OF JUDICATURE AT ALLAHABAD",
+                    "***********",
+                    "Civil Misc. Caveat Application no.      of 2026"
+                ]
 
-                
+                formatted_html_lines = []
+                for line in final_document_string.split("\n"):
+                    stripped = line.strip()
+                    if any(b_text in stripped for b_text in bold_lines) and stripped != "":
+                        formatted_html_lines.append(f"<b>{line}</b>")
+                    else:
+                        formatted_html_lines.append(line)
+
+                preview_body_html = "<br>".join(formatted_html_lines)
+
+                st.markdown("---")
+                st.markdown(
+                    f"""
+                    <div style="
+                        font-family: 'Times New Roman', Times, serif;
+                        font-size: 14pt;
+                        line-height: 2.0;
+                        background-color: #ffffff;
+                        color: #000000;
+                        border: 1px solid #ddd;
+                        padding: 40px;
+                        white-space: pre-wrap;
+                        width: 100%;
+                    ">{preview_body_html}</div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
                 html_formatted_content = f"""
                 <html>
                 <head>
                     <style>
                         @page {{ size: A4; margin: 1in; }}
-                        body {{ font-family: 'Times New Roman', Times, serif; font-size: 14pt; padding: 20px; line-height: 1.6; white-space: pre-wrap; color: #000000; }}
+                        body {{ font-family: 'Times New Roman', Times, serif; font-size: 14pt; padding: 20px; line-height: 2.0; white-space: pre-wrap; color: #000000; }}
                     </style>
                 </head>
-                <body>{final_document_string.replace('\n', '<br>')}</body>
+                <body>{preview_body_html}</body>
                 </html>
                 """
+
 
                 with act_col2:
                     st.download_button(
