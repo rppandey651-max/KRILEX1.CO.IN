@@ -123,7 +123,8 @@ st.markdown(
         background-color: #1F2937; color: #F3F4F6; padding: 20px;
         border-radius: 8px; margin-top: 30px; text-align: center;
     }}
-    .cmd-welcome-banner {
+    .cmd-welcome-banner 
+    {
         background: linear-gradient(90deg, #0F294A 0%, #1E3A8A 100%);
         color: #FFFFFF;
         padding: 16px 24px;
@@ -134,7 +135,8 @@ st.markdown(
         margin: 12px 0 20px 0;
         box-shadow: 0 4px 12px rgba(15, 41, 74, 0.18);
     }
-    .kpi-card {
+    .kpi-card 
+    {
         background: #FFFFFF;
         border: 1px solid #E2E8F0;
         border-radius: 10px;
@@ -154,7 +156,8 @@ st.markdown(
         margin-bottom: 10px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
-    .badge-pill {
+    .badge-pill 
+    {
         display: inline-block;
         padding: 3px 10px;
         border-radius: 12px;
