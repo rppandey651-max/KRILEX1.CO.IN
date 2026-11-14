@@ -1676,7 +1676,6 @@ IN THE MATTER OF:
                     pdf.set_auto_page_break(auto=True, margin=25.4)
                     pdf.add_page()
 
-                    # Special characters ko safe text me badlein taaki PDF crash na ho
                     clean_text = (
                         final_document_string.replace("–", "-")
                         .replace("—", "-")
@@ -1687,17 +1686,49 @@ IN THE MATTER OF:
                     )
                     safe_text = clean_text.encode("latin-1", "replace").decode("latin-1")
 
-                    for line in safe_text.split("\n"):
-                        stripped = line.strip()
-                        if any(b_text in stripped for b_text in bold_lines) and stripped != "":
+                    # Center-aligned lines ki list
+                    center_keywords = [
+                        "IN THE HIGH COURT",
+                        "***********",
+                        "Caveat Application no.",
+                        "(Under section 148-A",
+                        "On behalf of",
+                        "Misc. Petition",
+                        "(U/A ",
+                        "DISTRICT",
+                        "VERSUS",
+                        "BEFORE THE HON'BLE",
+                        "APPLICATION FOR"
+                    ]
+
+                    # Right-aligned lines ki list
+                    right_keywords = [
+                        "FILED BY:",
+                        "ADV.",
+                        "COUNSEL FOR",
+                        "DATED:"
+                    ]
+
+                    for raw_line in safe_text.split("\n"):
+                        stripped = raw_line.strip()
+
+                        if stripped == "":
+                            pdf.ln(6)
+                            continue
+
+                        # Bold check
+                        if any(b_text in stripped for b_text in bold_lines):
                             pdf.set_font("Times", style="B", size=14)
                         else:
                             pdf.set_font("Times", style="", size=14)
 
-                        if stripped == "":
-                            pdf.ln(6)
+                        # Alignment check (Extra spaces hata kar proper PDF alignment lagayein)
+                        if any(c_key in stripped for c_key in center_keywords):
+                            pdf.multi_cell(pdf.epw, 8, text=stripped, align="C")
+                        elif any(r_key in stripped for r_key in right_keywords):
+                            pdf.multi_cell(pdf.epw, 8, text=stripped, align="R")
                         else:
-                            pdf.multi_cell(0, 8, text=line)
+                            pdf.multi_cell(pdf.epw, 8, text=stripped, align="L")
 
                     real_pdf_bytes = bytes(pdf.output())
 
@@ -1712,7 +1743,8 @@ IN THE MATTER OF:
                         )
                 except Exception as pdf_err:
                     with act_col2:
-                        st.error(f"⚠️ PDF Error: {pdf_err} (Check if fpdf2 is in requirements.txt)")
+                        st.error(f"⚠️ PDF Error: {pdf_err}")
+
 
 # =======================================================
 # GLOBAL PERSISTENT FOOTER (APPEARS ON EVERY PAGE)
