@@ -840,35 +840,34 @@ elif not st.session_state.logged_in:
             st.rerun()
 # Renders Internal Connected Workstation Panels ONLY if logged_in state is verified
 else:
-    # Upper Action Ribbon Strip - Added a Back button next to System Home
-    h_col1, h_col2, h_col3 = st.columns(3)
+    from datetime import date, timedelta
 
-    with h_col1:
+    # Top Header Bar
+    top_c1, top_c2, top_c3 = st.columns([1.2, 3, 1.5])
+    with top_c1:
         if st.button("🏠 System Home", key="global_home_btn", use_container_width=True):
             st.session_state.footer_page = None
             st.session_state.active_app_tile = None
             st.session_state.selected_court = "--- Choose Jurisdiction ---"
             st.session_state.canvas_sub_page = "editor"
             st.rerun()
-
-    # 🎯 NEW: Widescreen Top Back Button Navigation Added Here
-    with h_col2:
-        if st.button("🔙 Back to Forum Hub", key="global_top_back_btn", use_container_width=True):
-            st.session_state.active_app_tile = None  # Drops active asset layer back to main choice matrix
-            st.session_state.canvas_sub_page = "editor"
-            st.rerun()
-
-    with h_col3:
-        with st.popover("👤 Profile Card", use_container_width=True):
+    with top_c2:
+        if logo_base64:
+            st.markdown(f'<div style="text-align:center;"><img src="{logo_base64}" width="110"></div>', unsafe_allow_html=True)
+        else:
+            st.markdown("<h3 style='text-align:center; color:#0F294A; margin:0;'>⚖️ KRILEX</h3>", unsafe_allow_html=True)
+    with top_c3:
+        with st.popover(f"⭐ Adv. {st.session_state.username}", use_container_width=True):
             st.markdown(f"##### Adv. {st.session_state.username}")
+            if st.session_state.active_app_tile is not None:
+                if st.button("🔙 Back to Dashboard", key="popover_back_dash", use_container_width=True):
+                    st.session_state.active_app_tile = None
+                    st.session_state.canvas_sub_page = "editor"
+                    st.rerun()
             if st.button("🔒 Terminate secure session", key="popover_logout", use_container_width=True, type="primary"):
                 st.session_state.logged_in = False
                 st.session_state.page = "main"
                 st.rerun()
-
-
-    st.markdown("---")
-
 
     if st.session_state.footer_page is not None:
         st.markdown('<div class="workstation-container">', unsafe_allow_html=True)
@@ -893,44 +892,227 @@ else:
             courts_list = get_all_indian_courts()
             choice = st.selectbox("Select Target Court / Forum", courts_list, key="court_selector_dropdown")
             if choice != "--- Choose Jurisdiction ---":
-                st.session_state.selected_court = choice; st.rerun()
+                st.session_state.selected_court = choice
+                st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
 
         elif st.session_state.active_app_tile is None:
-            st.markdown('<div class="workstation-container">', unsafe_allow_html=True)
-            st.markdown(f"<h4>🏛️ Active Judicial Hub: <span style='color:#8B0000;'>{st.session_state.selected_court}</span></h4>", unsafe_allow_html=True)
-            st.write("Select an application framework asset component blueprint below to launch the canvas workspace:")
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-            r1_col1, r1_col2, r1_col3 = st.columns(3)
-            with r1_col1:
-                st.markdown('<div class="legal-tile tile-blue">⚖️ Entire Petition </div>', unsafe_allow_html=True)
-                if st.button("Open Entire Petition", key="btn_entire", use_container_width=True, type="primary"): 
-                    st.session_state.active_app_tile = "Entire Petition"; st.rerun()
-            with r1_col2:
-                st.markdown('<div class="legal-tile tile-green">📄 Caveat Application</div>', unsafe_allow_html=True)
-                if st.button("Open Caveat Application", key="btn_caveat", use_container_width=True): 
-                    st.session_state.active_app_tile = "Caveat Application"; st.rerun()
-            with r1_col3:
-                st.markdown('<div class="legal-tile tile-red">⏳ Delay Condonation Application</div>', unsafe_allow_html=True)
-                if st.button("Open Delay Condonation", key="btn_delay", use_container_width=True): 
-                    st.session_state.active_app_tile = "Delay Condonation Application"; st.rerun()
+            court_display = st.session_state.selected_court.split("(")[0].strip()
+
+            # 1. Navy Blue Welcome Banner
+            st.markdown(f"""
+                <div class="cmd-welcome-banner">
+                    Welcome back, Adv. {st.session_state.username} — {court_display} Workspace
+                </div>
+            """, unsafe_allow_html=True)
+
+            # 2. Top 4 KPI Cards Row
+            k1, k2, k3, k4 = st.columns(4)
+            with k1:
+                st.markdown(f"""
+                    <div class="kpi-card kpi-green">
+                        <div style="font-size:13px; color:#64748B;">Selected Forum <span style="float:right; color:#16A34A; font-size:18px;">⚖️</span></div>
+                        <div style="font-size:18px; font-weight:700; color:#0F172A; margin:6px 0;">{court_display}</div>
+                    </div>
+                """, unsafe_allow_html=True)
+                if st.button("Change forum 🔄", key="kpi_change_forum", type="tertiary"):
+                    st.session_state.selected_court = "--- Choose Jurisdiction ---"
+                    st.rerun()
+
+            with k2:
+                st.markdown("""
+                    <div class="kpi-card kpi-blue">
+                        <div style="font-size:13px; color:#64748B;">Drafts Created <span style="float:right; color:#2563EB; font-size:18px;">📄</span></div>
+                        <div style="font-size:22px; font-weight:700; color:#0F172A; margin:6px 0;">12 Petitions</div>
+                        <div style="font-size:12px; color:#16A34A; font-weight:600;">+ 3 new this week</div>
+                    </div>
+                """, unsafe_allow_html=True)
+
+            with k3:
+                st.markdown("""
+                    <div class="kpi-card kpi-amber">
+                        <div style="font-size:13px; color:#64748B;">Active Caveats (90-Day) <span style="float:right; color:#D97706; font-size:18px;">⚠️</span></div>
+                        <div style="font-size:22px; font-weight:700; color:#0F172A; margin:6px 0;">3 Active</div>
+                        <span style="background:#FEF3C7; color:#92400E; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">⚠️ 1 expires soon</span>
+                    </div>
+                """, unsafe_allow_html=True)
+
+            with k4:
+                st.markdown("""
+                    <div class="kpi-card kpi-purple">
+                        <div style="font-size:13px; color:#64748B;">Avg. Drafting Time <span style="float:right; color:#7C3AED; font-size:18px;">⏱️</span></div>
+                        <div style="font-size:22px; font-weight:700; color:#0F172A; margin:6px 0;">3 Mins</div>
+                        <div style="font-size:12px; color:#64748B;">lightning fast</div>
+                    </div>
+                """, unsafe_allow_html=True)
 
             st.markdown("<br>", unsafe_allow_html=True)
+            # 3. Main Workspace Split: Left (Templates + Recent Drafts) | Right (Calculator + Defect Checklist)
+            main_left, main_right = st.columns([2.4, 1], gap="large")
 
-            r2_col1, r2_col2, r2_col3 = st.columns(3)
-            with r2_col1:
-                st.markdown('<div class="legal-tile tile-green">🛡️ Stay Application</div>', unsafe_allow_html=True)
-                if st.button("Open Stay Application", key="btn_stay", use_container_width=True): 
-                    st.session_state.active_app_tile = "Stay Application"; st.rerun()
-            with r2_col2:
-                st.markdown('<div class="legal-tile tile-red">🚫 Document Exemption Petition</div>', unsafe_allow_html=True)
-                if st.button("Open Exemption Application", key="btn_exemption", use_container_width=True): 
-                    st.session_state.active_app_tile = "Exemption Application"; st.rerun()
-            with r2_col3:
-                st.markdown('<div class="legal-tile tile-green">🚨 Immediate Urgency Application</div>', unsafe_allow_html=True)
-                if st.button("Open Urgency Listing", key="btn_urgency", use_container_width=True): 
-                    st.session_state.active_app_tile = "Urgency Application"; st.rerun()
+            with main_left:
+                with st.container(border=True):
+                    search_query = st.text_input("Search", placeholder="🔍 Search legal templates...", label_visibility="collapsed", key="dash_tpl_search").lower()
+
+                    tab_urgent, tab_main, tab_misc = st.tabs(["Urgent & Interim", "Main Petitions", "Misc. Applications"])
+
+                    with tab_urgent:
+                        u_col1, u_col2, u_col3 = st.columns(3)
+                        with u_col1:
+                            st.markdown("""
+                                <div class="tpl-card">
+                                    <span class="badge-pill badge-green">MOST USED</span>
+                                    <div style="font-size:22px; margin-bottom:8px;">⚖️</div>
+                                    <div style="font-weight:700; font-size:15px; color:#0F172A;">Caveat Application</div>
+                                    <div style="font-size:12px; color:#64748B; margin-top:4px;">U/S 148-A CPC<br>4 editable fields</div>
+                                </div>
+                            """, unsafe_allow_html=True)
+                            if st.button("Draft Caveat ➔", key="btn_caveat_new", use_container_width=True, type="primary"):
+                                st.session_state.active_app_tile = "Caveat Application"
+                                st.rerun()
+
+                        with u_col2:
+                            st.markdown("""
+                                <div class="tpl-card">
+                                    <span class="badge-pill badge-amber">URGENT</span>
+                                    <div style="font-size:22px; margin-bottom:8px;">🛡️</div>
+                                    <div style="font-weight:700; font-size:15px; color:#0F172A;">Stay Application</div>
+                                    <div style="font-size:12px; color:#64748B; margin-top:4px;">Interim Relief<br>5 editable fields</div>
+                                </div>
+                            """, unsafe_allow_html=True)
+                            if st.button("Draft Stay ➔", key="btn_stay_new", use_container_width=True):
+                                st.session_state.active_app_tile = "Stay Application"
+                                st.rerun()
+
+                        with u_col3:
+                            st.markdown("""
+                                <div class="tpl-card">
+                                    <span class="badge-pill badge-blue">PRIORITY</span>
+                                    <div style="font-size:22px; margin-bottom:8px;">🚨</div>
+                                    <div style="font-weight:700; font-size:15px; color:#0F172A;">Urgency Application</div>
+                                    <div style="font-size:12px; color:#64748B; margin-top:4px;">Immediate Listing<br>4 editable fields</div>
+                                </div>
+                            """, unsafe_allow_html=True)
+                            if st.button("Draft Urgency ➔", key="btn_urgency_new", use_container_width=True):
+                                st.session_state.active_app_tile = "Urgency Application"
+                                st.rerun()
+
+                    with tab_main:
+                        m_col1, m_col2 = st.columns(2)
+                        with m_col1:
+                            st.markdown("""
+                                <div class="tpl-card">
+                                    <span class="badge-pill badge-blue">FULL DRAFT</span>
+                                    <div style="font-size:22px; margin-bottom:8px;">📘</div>
+                                    <div style="font-weight:700; font-size:15px; color:#0F172A;">Entire Writ Petition</div>
+                                    <div style="font-size:12px; color:#64748B; margin-top:4px;">Article 226 / 227<br>8 structured clauses</div>
+                                </div>
+                            """, unsafe_allow_html=True)
+                            if st.button("Draft Entire Petition ➔", key="btn_entire_new", use_container_width=True, type="primary"):
+                                st.session_state.active_app_tile = "Entire Petition"
+                                st.rerun()
+
+                    with tab_misc:
+                        ms_col1, ms_col2 = st.columns(2)
+                        with ms_col1:
+                            st.markdown("""
+                                <div class="tpl-card">
+                                    <span class="badge-pill badge-amber">SEC. 5</span>
+                                    <div style="font-size:22px; margin-bottom:8px;">⏳</div>
+                                    <div style="font-weight:700; font-size:15px; color:#0F172A;">Delay Condonation</div>
+                                    <div style="font-size:12px; color:#64748B; margin-top:4px;">Limitation Act<br>5 editable fields</div>
+                                </div>
+                            """, unsafe_allow_html=True)
+                            if st.button("Draft Delay Condonation ➔", key="btn_delay_new", use_container_width=True):
+                                st.session_state.active_app_tile = "Delay Condonation Application"
+                                st.rerun()
+
+                        with ms_col2:
+                            st.markdown("""
+                                <div class="tpl-card">
+                                    <span class="badge-pill badge-green">EXEMPTION</span>
+                                    <div style="font-size:22px; margin-bottom:8px;">🚫</div>
+                                    <div style="font-weight:700; font-size:15px; color:#0F172A;">Document Exemption</div>
+                                    <div style="font-size:12px; color:#64748B; margin-top:4px;">Certified Copy Dispensation<br>4 editable fields</div>
+                                </div>
+                            """, unsafe_allow_html=True)
+                            if st.button("Draft Exemption ➔", key="btn_exemption_new", use_container_width=True):
+                                st.session_state.active_app_tile = "Exemption Application"
+                                st.rerun()
+                # Recent Drafts Section
+                st.markdown("<br>", unsafe_allow_html=True)
+                with st.container(border=True):
+                    st.markdown("##### 📂 Recent Drafts")
+                    h1, h2, h3, h4, h5 = st.columns([2.2, 1, 1.2, 1.2, 2])
+                    h1.markdown("**Case Title**")
+                    h2.markdown("**Type**")
+                    h3.markdown("**District**")
+                    h4.markdown("**Last Edited**")
+                    h5.markdown("**Actions**")
+                    st.divider()
+
+                    saved_c_name = st.session_state.get("persist_c_name", "")
+                    saved_dist = st.session_state.get("persist_district", "")
+                    if saved_c_name and saved_c_name != "_____________________":
+                        r1, r2, r3, r4, r5 = st.columns([2.2, 1, 1.2, 1.2, 2])
+                        r1.write(f"{saved_c_name} vs. State of UP")
+                        r2.write("Caveat")
+                        r3.write(saved_dist if saved_dist else "PRAYAGRAJ")
+                        r4.write("Today")
+                        with r5:
+                            b_edit, b_prev = st.columns(2)
+                            if b_edit.button("✏️ Edit", key="rec_edit_1", use_container_width=True):
+                                st.session_state.active_app_tile = "Caveat Application"
+                                st.session_state.canvas_sub_page = "editor"
+                                st.rerun()
+                            if b_prev.button("📄 View", key="rec_view_1", use_container_width=True):
+                                st.session_state.active_app_tile = "Caveat Application"
+                                st.session_state.canvas_sub_page = "preview"
+                                st.rerun()
+                    else:
+                        r1, r2, r3, r4, r5 = st.columns([2.2, 1, 1.2, 1.2, 2])
+                        r1.write(f"{st.session_state.username} vs. State of UP")
+                        r2.write("Caveat")
+                        r3.write("PRAYAGRAJ")
+                        r4.write("Sample Draft")
+                        with r5:
+                            if st.button("✏️ Resume Edit", key="sample_resume_btn", use_container_width=True):
+                                st.session_state.active_app_tile = "Caveat Application"
+                                st.rerun()
+
+            # Right Sidebar Tools (Caveat Calculator + Defect Checklist)
+            with main_right:
+                with st.container(border=True):
+                    st.markdown("##### ⏳ Caveat 90-Day Expiry Calculator")
+                    filing_date = st.date_input("Caveat Filing Date", value=date.today(), format="DD/MM/YYYY", key="caveat_calc_date")
+                    expiry_date = filing_date + timedelta(days=90)
+                    days_remaining = (expiry_date - date.today()).days
+
+                    if days_remaining > 0:
+                        st.markdown(f"""
+                            <div style="background:#DCFCE7; border:1px solid #86EFAC; border-radius:8px; padding:12px; text-align:center; margin-top:10px;">
+                                <div style="font-size:18px; font-weight:700; color:#166534;">{days_remaining} days left</div>
+                                <div style="font-size:12px; color:#15803D;">Valid till {expiry_date.strftime('%d-%m-%Y')}</div>
+                            </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"""
+                            <div style="background:#FEE2E2; border:1px solid #FCA5A5; border-radius:8px; padding:12px; text-align:center; margin-top:10px;">
+                                <div style="font-size:18px; font-weight:700; color:#991B1B;">Expired</div>
+                                <div style="font-size:12px; color:#B91C1C;">Expired on {expiry_date.strftime('%d-%m-%Y')}</div>
+                            </div>
+                        """, unsafe_allow_html=True)
+
+                st.markdown("<br>", unsafe_allow_html=True)
+
+                with st.container(border=True):
+                    st.markdown("##### 📋 High Court Defect Checklist")
+                    st.checkbox("⚖️ Court Fee Stamp", key="chk_fee")
+                    st.checkbox("📜 Vakalatnama", key="chk_vakalat")
+                    st.checkbox("✍️ Verified Affidavit", key="chk_affidavit")
+                    st.checkbox("📑 Index & Synopses", key="chk_index")
+                    st.checkbox("📄 Impugned Order Copy", key="chk_order")
+
 
         else:
             active_form = st.session_state.active_app_tile
