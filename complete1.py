@@ -1615,7 +1615,7 @@ else:
 
                 caveat_cat_mapped = st.session_state.get("persist_caveat_category", "Civil")
                 caveat_title_line = f"{caveat_cat_mapped} Misc. Caveat Application No. ______ of {datetime.now().year}"
-                misc_petition_line = f"Proposed Misc. Petition ({caveat_cat_mapped}) No. ______ of {datetime.now().year}"
+                misc_petition_line = f"IN\nProposed Misc. Petition No. ______ of {datetime.now().year} ({caveat_cat_mapped})"
                 if active_form == "Caveat Application":
                     final_document_string = f"""IN THE HIGH COURT OF JUDICATURE AT ALLAHABAD
 ***********
