@@ -1757,14 +1757,20 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                     unsafe_allow_html=True
                 )
                 # =======================================================
-                # LEGAL PAPER PDF GENERATOR (8.5 x 14 INCHES, TIMES 14PT)
+                # LEGAL PAPER PDF GENERATOR (8.5 x 14 INCHES, COMPLETE)
                 # =======================================================
                 try:
+                    import re
                     from fpdf import FPDF
 
-                    # Legal Paper Size: 8.5 inch (215.9 mm) x 14 inch (355.6 mm)
+                    # Legal Paper Size: 215.9 mm x 355.6 mm
                     pdf = FPDF(format=(215.9, 355.6), unit="mm")
-                    pdf.set_margins(left=38.1, top=25.4, right=25.4)
+                    left_m = 38.1   # 1.5 inch left binding margin
+                    right_m = 25.4  # 1 inch right margin
+                    top_m = 25.4    # 1 inch top margin
+                    usable_w = 215.9 - left_m - right_m  # Exact 152.4 mm width
+
+                    pdf.set_margins(left=left_m, top=top_m, right=right_m)
                     pdf.set_auto_page_break(auto=True, margin=25.4)
                     pdf.add_page()
 
@@ -1809,8 +1815,6 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                         "DATED:"
                     ]
 
-
-                    import re
                     for raw_line in safe_text.split("\n"):
                         stripped = raw_line.strip()
 
@@ -1830,14 +1834,12 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                         elif any(r_key in stripped for r_key in right_keywords):
                             pdf.multi_cell(usable_w, 8, text=stripped, align="R")
                         elif re.match(r'^\d+-', stripped):
-                            # Double line spacing (10mm) + paragraph ke baad extra 6mm gap
                             pdf.multi_cell(usable_w, 10, text=stripped, align="J")
                             pdf.ln(6)
                         elif stripped.startswith("It is, therefore"):
                             pdf.multi_cell(usable_w, 10, text=stripped, align="J")
                         else:
                             pdf.multi_cell(usable_w, 9, text=stripped, align="L")
-
 
                     real_pdf_bytes = bytes(pdf.output())
 
@@ -1853,6 +1855,7 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                 except Exception as pdf_err:
                     with act_col2:
                         st.error(f"⚠️ PDF Error: {pdf_err}")
+
 
 
 
