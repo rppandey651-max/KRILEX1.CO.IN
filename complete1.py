@@ -1759,7 +1759,7 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                 ]
 
                 right_screen_lines = [
-                    "DISTRICT",
+                    "DISTRICT –",
                     "---- Applicant",
                     "---- Proposed Petitioner",
                     "---- Proposed Opposite Party",
@@ -1874,7 +1874,7 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                     ]
 
                     right_keywords = [
-                        "DISTRICT",
+                        "DISTRICT -",
                         "---- Applicant",
                         "---- Proposed Petitioner",
                         "---- Proposed Opposite Party",
