@@ -1595,18 +1595,27 @@ else:
 
                 # Advocate details form se nikalna
                 adv_full_block = []
+                # Advocate details form se nikalna (Right side ke liye)
+                adv_full_block = []
                 for idx in range(st.session_state.get("counsel_count", 1)):
                     a_name = st.session_state.get(f"f_adv_name_{idx}", "").strip()
                     a_roll = st.session_state.get(f"f_adv_roll_{idx}", "").strip()
                     a_cham = st.session_state.get(f"f_adv_chamber_{idx}", "").strip()
                     a_mob = st.session_state.get(f"f_adv_phone_{idx}", "").strip()
                     if a_name:
-                        line_parts = [a_name]
-                        if a_roll: line_parts.append(f"Adv. Roll: {a_roll}")
-                        if a_cham: line_parts.append(a_cham)
-                        if a_mob: line_parts.append(f"Mob: {a_mob}")
-                        adv_full_block.append("\n".join(line_parts))
-                adv_signature_text = "\n".join(adv_full_block) if adv_full_block else f"ADV. {st.session_state.username.upper()}"
+                        # Naam ke aage ADV. lagayein taaki right alignment match ho
+                        disp_name = a_name if a_name.upper().startswith("ADV.") else f"ADV. {a_name}"
+                        adv_full_block.append(disp_name)
+                        if a_roll:
+                            adv_full_block.append(f"Adv. Roll: {a_roll}")
+                        if a_cham:
+                            # Chamber ke aage Chamber: lagayein taaki right alignment match ho
+                            disp_cham = a_cham if "CHAMBER" in a_cham.upper() else f"Chamber: {a_cham}"
+                            adv_full_block.append(disp_cham)
+                        if a_mob:
+                            adv_full_block.append(f"Mob: {a_mob}")
+                        adv_full_block.append("")
+                adv_signature_text = "\n".join(adv_full_block).strip() if adv_full_block else f"ADV. {st.session_state.username.upper()}"
 
                 if '(' in provision_mapped:
                     provision_text = provision_mapped.split('(')[0].strip().upper()
@@ -1725,7 +1734,7 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
 
                     if stripped == "IN" or any(c_text in stripped for c_text in center_screen_lines):
                         formatted_html_lines.append(f"<div style='text-align: center;'>{content}</div>")
-                    elif any(r_text in stripped for r_text in right_screen_lines):
+                    elif any(r_text.upper() in stripped.upper() for r_text in right_screen_lines):
                         formatted_html_lines.append(f"<div style='text-align: right;'>{content}</div>")
                     elif re.match(r'^\d+-', stripped):
                         # Har numbered paragraph ke neeche 2-line ka proper court gap
@@ -1831,7 +1840,7 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
 
                         if stripped == "IN" or any(c_key in stripped for c_key in center_keywords):
                             pdf.multi_cell(usable_w, 9, text=stripped, align="C")
-                        elif any(r_key in stripped for r_key in right_keywords):
+                        elif any(r_key.upper() in stripped.upper() for r_key in right_keywords):
                             pdf.multi_cell(usable_w, 8, text=stripped, align="R")
                         elif re.match(r'^\d+-', stripped):
                             pdf.multi_cell(usable_w, 10, text=stripped, align="J")
