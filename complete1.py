@@ -1581,107 +1581,108 @@ else:
                 st.markdown("""
                     <style>
                     .block-container { max-width: 95% !important; padding-left: 3rem !important; padding-right: 3rem !important; }
-                    
-                    /* 🏛️ LEGAL PREVIEW BLOCK: Set alignment container */
-                    code, pre, .stCode, div[data-testid="stCodeBlock"] pre {
-                        font-family: 'Times New Roman', Times, serif !important; 
-                        font-size: 14pt !important; 
-                        line-height: 1.6 !important;
-                        background-color: #ffffff !important; 
-                        color: #000000 !important; 
-                        border: 1px solid #ddd !important;
-                        padding: 40px !important; 
-                        white-space: pre-wrap !important;
-                        display: block !important;
-                        width: 100% !important;
-                        
-                        /* 🚀 FIXED: Default base aligned to standard text, headings filtered inside final_document_string */
-                        text-align: justify !important;
-                    }
                     button[data-testid="stCopyButton"] { display: none !important; }
                     </style>
                 """, unsafe_allow_html=True)
+
+                from datetime import datetime
+                today_str = datetime.now().strftime("%d-%m-%Y")
 
                 exp_p_compiled = st.session_state.get("persist_exp_p_formatted", "1. _____________________")
                 r_compiled = st.session_state.get("persist_r_formatted", "1. _____________________")
                 p_compiled = st.session_state.get("persist_p_formatted", "1. _____________________")
                 custom_paras_section = f"\n\n{additional_paras_mapped}" if additional_paras_mapped.strip() else ""
-                
+
+                # Advocate details form se nikalna
+                adv_full_block = []
+                for idx in range(st.session_state.get("counsel_count", 1)):
+                    a_name = st.session_state.get(f"f_adv_name_{idx}", "").strip()
+                    a_roll = st.session_state.get(f"f_adv_roll_{idx}", "").strip()
+                    a_cham = st.session_state.get(f"f_adv_chamber_{idx}", "").strip()
+                    a_mob = st.session_state.get(f"f_adv_phone_{idx}", "").strip()
+                    if a_name:
+                        line_parts = [a_name]
+                        if a_roll: line_parts.append(f"Adv. Roll: {a_roll}")
+                        if a_cham: line_parts.append(a_cham)
+                        if a_mob: line_parts.append(f"Mob: {a_mob}")
+                        adv_full_block.append("\n".join(line_parts))
+                adv_signature_text = "\n".join(adv_full_block) if adv_full_block else f"ADV. {st.session_state.username.upper()}"
+
                 if '(' in provision_mapped:
                     provision_text = provision_mapped.split('(')[0].strip().upper()
                 else:
                     provision_text = provision_mapped.upper()
-                
-                # 🚀 FIXED: Structured spaces injected to center titles while maintaining left-aligned bullet paragraphs
+
                 caveat_cat_mapped = st.session_state.get("persist_caveat_category", "Civil")
-                caveat_title_line = f"{caveat_cat_mapped} Misc. Caveat Application no.      of 2026"
-                misc_petition_line = f"Misc. Petition {caveat_cat_mapped} NO-        of 2026 ({caveat_cat_mapped.lower()})"
-
+                caveat_title_line = f"{caveat_cat_mapped} Misc. Caveat Application No. ______ of {datetime.now().year}"
+                misc_petition_line = f"In Re: Misc. Petition ({caveat_cat_mapped}) No. ______ of {datetime.now().year}"
                 if active_form == "Caveat Application":
-                    final_document_string = f"""                               IN THE HIGH COURT OF JUDICATURE AT ALLAHABAD
-                                                      ***********
-                                      {caveat_title_line}
-                (Under section 148-A C.P.C. read with Rule 5 Chapter 22 of High Court Rules)
+                    final_document_string = f"""IN THE HIGH COURT OF JUDICATURE AT ALLAHABAD
+***********
+{caveat_title_line}
+(Under Section 148-A C.P.C. read with Rule 5, Chapter XXII of High Court Rules)
 
-                                                      On behalf of
-                                        {c_name_mapped}    ---- Applicant
+On behalf of:
+{c_name_mapped}, {c_addr_mapped}
+---- Applicant / Caveator
 
-                                      {misc_petition_line}
-                                                      (U/A {provision_text})
+{misc_petition_line}
+(U/A {provision_text})
 
-                                                   DISTRICT – {district_mapped}
-...
-
+DISTRICT – {district_mapped}
 
 {exp_p_compiled}
-- - - - - - - - - - - - - - - - - - - - ---- Proposed Petitioner/plaintiff
+---- Proposed Petitioner / Plaintiff
 
-                                                        VERSUS
+VERSUS
 
-{r_compiled} - - - - - - - - - - - - - - ---- Proposed defendant /Respondent
+{r_compiled}
+---- Proposed Opposite Party / Respondent
 
 TO,
-    The Hon`ble chief justice and his other companion judges of the aforesaid court.
+    The Hon'ble Chief Justice and his other companion Judges of the aforesaid Court.
 
-    The humble application of the above named applicant most respectfully showeth as under.
+    The humble application of the above-named Applicant / Caveator most respectfully showeth as under:
 
-1- That in the above noted proposed application, the proposed petitioner may file a application before this Hon`ble court against the order dated {order_date_mapped} passed by Civil Judge (SD), {district_mapped}.{custom_paras_section}
+1- That in the above-noted proposed petition/application, the Proposed Petitioner is likely to file a petition before this Hon'ble Court against the order dated {order_date_mapped} passed by the Court below, District {district_mapped}.{custom_paras_section}
 
 PRAYER:
-It is, therefore, most respectfully prayed that this Hon'ble Court may be pleased to direct that no ex-parte order or ad-interim relief be granted to the Expected Opposite Parties without giving prior due notice and opportunity of being heard to the Caveator or their Counsel.
+    It is, therefore, most respectfully prayed that this Hon'ble Court may graciously be pleased to direct that no ex-parte order or ad-interim relief be granted to the Proposed Petitioner / Opposite Parties without giving prior due notice and an opportunity of being heard to the Caveator or his Counsel.
 
-                                                       FILED BY:
-                                                   ADV. {st.session_state.username.upper()}
-                                            COUNSEL FOR APPLICANT/CAVEATOR
-                                                   DATED: 09-11-2026"""
+FILED BY:
+{adv_signature_text}
+COUNSEL FOR APPLICANT / CAVEATOR
+DATED: {today_str}"""
                 else:
-                    final_document_string = f"""                                     BEFORE THE HON'BLE {st.session_state.selected_court.upper()}
-                                                   DISTRICT: {district_mapped}
+                    final_document_string = f"""BEFORE THE HON'BLE {st.session_state.selected_court.upper()}
+DISTRICT: {district_mapped}
 
 IN THE MATTER OF:
 {p_compiled}
+---- Petitioner(s)
 
-                                                        VERSUS
+VERSUS
+
 {r_compiled}
+---- Respondent(s)
 
-                                APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
+APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
 
-                st.markdown(f"### 🏛️ Expanded Workstation Preview Stage: **{active_form}**")
-                
+                st.markdown(f"### 🏛️ Legal Paper Preview Stage (8.5\" x 14\"): **{active_form}**")
+
                 act_col1, act_col2 = st.columns(2)
                 with act_col1:
                     if st.button("⬅ Return to Editor Layout Panel", use_container_width=True):
                         st.session_state.canvas_sub_page = "editor"
                         st.rerun()
-                
-                st.markdown("---")
-                # Highlighted lines ko bold karne ke liye HTML-formatted string
+
                 bold_lines = [
                     "IN THE HIGH COURT OF JUDICATURE AT ALLAHABAD",
                     "***********",
-                    caveat_title_line
+                    caveat_title_line,
+                    "VERSUS",
+                    "PRAYER:"
                 ]
-
 
                 formatted_html_lines = []
                 for line in final_document_string.split("\n"):
@@ -1702,23 +1703,25 @@ IN THE MATTER OF:
                         line-height: 2.0;
                         background-color: #ffffff;
                         color: #000000;
-                        border: 1px solid #ddd;
-                        padding: 40px;
+                        border: 1px solid #cbd5e1;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+                        max-width: 850px;
+                        margin: auto;
+                        padding: 60px 70px;
                         white-space: pre-wrap;
-                        width: 100%;
                     ">{preview_body_html}</div>
                     """,
                     unsafe_allow_html=True
                 )
-
                 # =======================================================
-                # REAL PDF GENERATOR (TIMES NEW ROMAN 14PT, 1-INCH MARGIN)
+                # LEGAL PAPER PDF GENERATOR (8.5 x 14 INCHES, TIMES 14PT)
                 # =======================================================
                 try:
                     from fpdf import FPDF
 
-                    pdf = FPDF(format="A4", unit="mm")
-                    pdf.set_margins(25.4, 25.4, 25.4)  # 1 Inch Court Margin
+                    # Legal Paper Size: 8.5 inch (215.9 mm) x 14 inch (355.6 mm)
+                    pdf = FPDF(format=(215.9, 355.6), unit="mm")
+                    pdf.set_margins(left=38.1, top=25.4, right=25.4)
                     pdf.set_auto_page_break(auto=True, margin=25.4)
                     pdf.add_page()
 
@@ -1732,14 +1735,13 @@ IN THE MATTER OF:
                     )
                     safe_text = clean_text.encode("latin-1", "replace").decode("latin-1")
 
-                    # Center-aligned lines ki list
                     center_keywords = [
                         "IN THE HIGH COURT",
                         "***********",
-                        "Caveat Application no.",
-                        "(Under section 148-A",
-                        "On behalf of",
-                        "Misc. Petition",
+                        "Caveat Application No.",
+                        "(Under Section 148-A",
+                        "On behalf of:",
+                        "In Re: Misc. Petition",
                         "(U/A ",
                         "DISTRICT",
                         "VERSUS",
@@ -1747,10 +1749,17 @@ IN THE MATTER OF:
                         "APPLICATION FOR"
                     ]
 
-                    # Right-aligned lines ki list
                     right_keywords = [
+                        "---- Applicant",
+                        "---- Proposed Petitioner",
+                        "---- Proposed Opposite Party",
+                        "---- Petitioner(s)",
+                        "---- Respondent(s)",
                         "FILED BY:",
                         "ADV.",
+                        "Adv. Roll:",
+                        "CHAMBER",
+                        "Mob:",
                         "COUNSEL FOR",
                         "DATED:"
                     ]
@@ -1759,30 +1768,30 @@ IN THE MATTER OF:
                         stripped = raw_line.strip()
 
                         if stripped == "":
-                            pdf.ln(6)
+                            pdf.ln(5)
                             continue
 
-                        # Bold check
                         if any(b_text in stripped for b_text in bold_lines):
                             pdf.set_font("Times", style="B", size=14)
                         else:
                             pdf.set_font("Times", style="", size=14)
 
-                        # Alignment check (Extra spaces hata kar proper PDF alignment lagayein)
                         if any(c_key in stripped for c_key in center_keywords):
-                            pdf.multi_cell(pdf.epw, 8, text=stripped, align="C")
+                            pdf.multi_cell(pdf.epw, 9, text=stripped, align="C")
                         elif any(r_key in stripped for r_key in right_keywords):
                             pdf.multi_cell(pdf.epw, 8, text=stripped, align="R")
+                        elif stripped.startswith(("1-", "2-", "3-", "4-", "5-", "6-", "7-", "8-", "9-", "It is, therefore")):
+                            pdf.multi_cell(pdf.epw, 10, text=stripped, align="J")
                         else:
-                            pdf.multi_cell(pdf.epw, 8, text=stripped, align="L")
+                            pdf.multi_cell(pdf.epw, 9, text=stripped, align="L")
 
                     real_pdf_bytes = bytes(pdf.output())
 
                     with act_col2:
                         st.download_button(
-                            label="📥 Download Generated Petition (PDF)",
+                            label="📥 Download Legal Paper PDF (8.5\" x 14\")",
                             data=real_pdf_bytes,
-                            file_name=f"{active_form.lower().replace(' ', '_')}_final.pdf",
+                            file_name=f"{active_form.lower().replace(' ', '_')}_legal.pdf",
                             mime="application/pdf",
                             use_container_width=True,
                             type="primary"
@@ -1790,6 +1799,7 @@ IN THE MATTER OF:
                 except Exception as pdf_err:
                     with act_col2:
                         st.error(f"⚠️ PDF Error: {pdf_err}")
+
 
 
 # =======================================================
