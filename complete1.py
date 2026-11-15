@@ -1504,7 +1504,7 @@ else:
                                         e.preventDefault();
                                         const currentNum = parseInt(match[1], 10);
                                         const nextNum = currentNum + 1;
-                                        const insertText = `\\n${nextNum}- `;
+                                        const insertText = `\n\n${nextNum}- `;
                                         const newValue = textBefore + insertText + textAfter;
                                         
                                         // Use native React value setter so Streamlit state locks the new line permanently
@@ -1713,11 +1713,12 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                     "DATED:"
                 ]
 
+                import re
                 formatted_html_lines = []
                 for line in final_document_string.split("\n"):
                     stripped = line.strip()
                     if stripped == "":
-                        formatted_html_lines.append("<br>")
+                        formatted_html_lines.append("<div style='height: 14px;'></div>")
                         continue
 
                     content = f"<b>{stripped}</b>" if any(b_text in stripped for b_text in bold_lines) else stripped
@@ -1726,10 +1727,14 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                         formatted_html_lines.append(f"<div style='text-align: center;'>{content}</div>")
                     elif any(r_text in stripped for r_text in right_screen_lines):
                         formatted_html_lines.append(f"<div style='text-align: right;'>{content}</div>")
+                    elif re.match(r'^\d+-', stripped):
+                        # Har numbered paragraph ke neeche 2-line ka proper court gap
+                        formatted_html_lines.append(f"<div style='text-align: justify; margin-bottom: 18px;'>{content}</div>")
                     else:
                         formatted_html_lines.append(f"<div style='text-align: justify;'>{content}</div>")
 
                 preview_body_html = "".join(formatted_html_lines)
+
 
 
                 st.markdown("---")
@@ -1805,12 +1810,15 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                     ]
 
 
+                    import re
                     for raw_line in safe_text.split("\n"):
                         stripped = raw_line.strip()
 
                         if stripped == "":
-                            pdf.ln(5)
+                            pdf.ln(4)
                             continue
+
+                        pdf.set_x(left_m)
 
                         if any(b_text in stripped for b_text in bold_lines):
                             pdf.set_font("Times", style="B", size=14)
@@ -1818,13 +1826,18 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                             pdf.set_font("Times", style="", size=14)
 
                         if any(c_key in stripped for c_key in center_keywords):
-                            pdf.multi_cell(pdf.epw, 9, text=stripped, align="C")
+                            pdf.multi_cell(usable_w, 9, text=stripped, align="C")
                         elif any(r_key in stripped for r_key in right_keywords):
-                            pdf.multi_cell(pdf.epw, 8, text=stripped, align="R")
-                        elif stripped.startswith(("1-", "2-", "3-", "4-", "5-", "6-", "7-", "8-", "9-", "It is, therefore")):
-                            pdf.multi_cell(pdf.epw, 10, text=stripped, align="J")
+                            pdf.multi_cell(usable_w, 8, text=stripped, align="R")
+                        elif re.match(r'^\d+-', stripped):
+                            # Double line spacing (10mm) + paragraph ke baad extra 6mm gap
+                            pdf.multi_cell(usable_w, 10, text=stripped, align="J")
+                            pdf.ln(6)
+                        elif stripped.startswith("It is, therefore"):
+                            pdf.multi_cell(usable_w, 10, text=stripped, align="J")
                         else:
-                            pdf.multi_cell(pdf.epw, 9, text=stripped, align="L")
+                            pdf.multi_cell(usable_w, 9, text=stripped, align="L")
+
 
                     real_pdf_bytes = bytes(pdf.output())
 
