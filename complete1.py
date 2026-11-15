@@ -1627,7 +1627,7 @@ On behalf of:
 ---- Applicant / Caveator
 
 {misc_petition_line}
-(U/A {provision_text})
+(Under {provision_text})
 
 DISTRICT – {district_mapped}
 
@@ -1689,7 +1689,7 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                     "(Under Section 148-A",
                     "On behalf of:",
                     "In Re: Misc. Petition",
-                    "(U/A ",
+                    "(Under ",
                     "VERSUS",
                     "PRAYER:",
                     "BEFORE THE HON'BLE",
@@ -1785,7 +1785,7 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                         "(Under Section 148-A",
                         "On behalf of:",
                         "In Re: Misc. Petition",
-                        "(U/A ",
+                        "(Under ",
                         "VERSUS",
                         "PRAYER:",
                         "BEFORE THE HON'BLE",
