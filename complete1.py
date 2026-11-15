@@ -1432,7 +1432,19 @@ else:
 
                 # Joining all counsel metadata cleanly into a single state string for compile tracking
                 st.session_state.persist_adv_name = "\n".join(adv_names_list)
-
+                # --- FILING / CAVEAT DATE BOX ---
+                st.markdown("<br>", unsafe_allow_html=True)
+                st.markdown("##### 📅 Filing / Caveat Date")
+                with st.container(border=True):
+                    from datetime import date
+                    filing_date_val = st.date_input(
+                        "Select Caveat / Filing Date (Will appear opposite to FILED BY)",
+                        value=st.session_state.get("persist_filing_date_obj", date.today()),
+                        format="DD/MM/YYYY",
+                        key="f_filing_date"
+                    )
+                    st.session_state.persist_filing_date_obj = filing_date_val
+                    st.session_state.persist_filing_date = filing_date_val.strftime("%d-%m-%Y")
 
                 # --- FULL WIDTH: EDITABLE LEGAL PARAGRAPHS BLOCK WITH VOICE & AUTO-NUMBERING ---
                 st.markdown("<br>", unsafe_allow_html=True)
@@ -1586,7 +1598,7 @@ else:
                 """, unsafe_allow_html=True)
 
                 from datetime import datetime
-                today_str = datetime.now().strftime("%d-%m-%Y")
+                today_str = st.session_state.get("persist_filing_date", datetime.now().strftime("%d-%m-%Y"))
 
                 exp_p_compiled = st.session_state.get("persist_exp_p_formatted", "1. _____________________")
                 r_compiled = st.session_state.get("persist_r_formatted", "1. _____________________")
@@ -1658,10 +1670,10 @@ TO,
 PRAYER:
     It is, therefore, most respectfully prayed that this Hon'ble Court may graciously be pleased to direct that no ex-parte order or ad-interim relief be granted to the Proposed Petitioner / Opposite Parties without giving prior due notice and an opportunity of being heard to the Caveator or his Counsel.
 
-FILED BY:
+SPLIT_ROW|DATED: {today_str}|FILED BY:
 {adv_signature_text}
-COUNSEL FOR APPLICANT / CAVEATOR
-DATED: {today_str}"""
+COUNSEL FOR APPLICANT / CAVEATOR"""
+
                 else:
                     final_document_string = f"""BEFORE THE HON'BLE {st.session_state.selected_court.upper()}
 DISTRICT: {district_mapped}
@@ -1728,6 +1740,19 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                     stripped = line.strip()
                     if stripped == "":
                         formatted_html_lines.append("<div style='height: 14px;'></div>")
+                        continue
+                formatted_html_lines = []
+                for line in final_document_string.split("\n"):
+                    stripped = line.strip()
+                    if stripped == "":
+                        formatted_html_lines.append("<div style='height: 14px;'></div>")
+                        continue
+                    elif stripped.startswith("SPLIT_ROW|"):
+                        _, left_part, right_part = stripped.split("|")
+                        formatted_html_lines.append(
+                            f"<div style='display: flex; justify-content: space-between; width: 100%;'>"
+                            f"<span>{left_part}</span><span>{right_part}</span></div>"
+                        )
                         continue
 
                     content = f"<b>{stripped}</b>" if any(b_text in stripped for b_text in bold_lines) else stripped
@@ -1838,8 +1863,15 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                         else:
                             pdf.set_font("Times", style="", size=14)
 
-                        if stripped == "IN" or any(c_key in stripped for c_key in center_keywords):
+                        if stripped.startswith("SPLIT_ROW|"):
+                            _, left_part, right_part = stripped.split("|")
+                            current_y = pdf.get_y()
+                            pdf.cell(usable_w / 2, 9, text=left_part, align="L")
+                            pdf.set_xy(left_m + (usable_w / 2), current_y)
+                            pdf.cell(usable_w / 2, 9, text=right_part, align="R", new_x="LMARGIN", new_y="NEXT")
+                        elif stripped == "IN" or any(c_key in stripped for c_key in center_keywords):
                             pdf.multi_cell(usable_w, 9, text=stripped, align="C")
+
                         elif any(r_key.upper() in stripped.upper() for r_key in right_keywords):
                             pdf.multi_cell(usable_w, 8, text=stripped, align="R")
                         elif re.match(r'^\d+-', stripped):
