@@ -879,74 +879,120 @@ else:
     with rail_col:
         st.markdown("""
             <style>
+            /* Left Rail ko Floating aur Expandable banana */
             div[data-testid="stColumn"]:has(.left-rail-marker) {
+                position: fixed !important;
+                left: 18px !important;
+                top: 95px !important;
+                width: 58px !important;
+                min-width: 58px !important;
+                max-width: 58px !important;
                 background-color: #FFFFFF !important;
                 border-radius: 14px !important;
-                padding: 14px 6px !important;
+                padding: 14px 8px !important;
                 border: 1px solid #E2E8F0 !important;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.04) !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.08) !important;
                 min-height: 76vh !important;
+                z-index: 99999 !important; /* Dashboard ke upar float karne ke liye */
+                overflow: hidden !important;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             }
+
+            /* Mouse le jaane (Hover) par Sidebar poora khulega */
+            div[data-testid="stColumn"]:has(.left-rail-marker):hover {
+                width: 235px !important;
+                min-width: 235px !important;
+                max-width: 235px !important;
+                box-shadow: 10px 0 30px rgba(15, 41, 74, 0.18) !important;
+            }
+
+            /* Buttons ko left-align karna taaki icon pehle aur text baad mein dikhe */
             div[data-testid="stColumn"]:has(.left-rail-marker) button {
                 border: none !important;
                 background: transparent !important;
-                font-size: 20px !important;
-                padding: 10px 0px !important;
+                padding: 10px 11px !important;
                 border-radius: 10px !important;
                 color: #475569 !important;
                 box-shadow: none !important;
                 margin-bottom: 6px !important;
+                display: flex !important;
+                justify-content: flex-start !important;
+                align-items: center !important;
+                width: 100% !important;
+                overflow: hidden !important;
             }
+
+            /* Button ke andar ka text nowrap rakhna taaki neeche na gire */
+            div[data-testid="stColumn"]:has(.left-rail-marker) button p {
+                font-size: 15px !important;
+                font-weight: 600 !important;
+                white-space: nowrap !important;
+                margin: 0 !important;
+                letter-spacing: 0.2px !important;
+            }
+
+            /* Hover state on individual button */
             div[data-testid="stColumn"]:has(.left-rail-marker) button:hover {
                 background-color: #EFF6FF !important;
                 color: #1D4ED8 !important;
             }
+
+            /* Active Selected Tab Style */
             div[data-testid="stColumn"]:has(.left-rail-marker) button[kind="primary"] {
                 background-color: #EFF6FF !important;
                 color: #1D4ED8 !important;
                 border-left: 3px solid #1D4ED8 !important;
             }
+
+            /* Main content ko thoda right shift karna taaki collapsed bar ke neeche na dabey */
+            div[data-testid="stColumn"]:has(.left-rail-marker) + div[data-testid="stColumn"] {
+                margin-left: 72px !important;
+                width: calc(100% - 72px) !important;
+                flex: 1 1 calc(100% - 72px) !important;
+            }
             </style>
             <div class="left-rail-marker"></div>
         """, unsafe_allow_html=True)
 
-        if st.button("⊞", key="rail_dash", help="Dashboard Home", type="primary" if st.session_state.sidebar_tab == "dashboard" else "secondary", use_container_width=True):
+
+        if st.button("⊞  Dashboard Home", key="rail_dash", type="primary" if st.session_state.sidebar_tab == "dashboard" else "secondary", use_container_width=True):
             st.session_state.sidebar_tab = "dashboard"
             st.session_state.active_app_tile = None
             st.session_state.footer_page = None
             st.rerun()
 
-        if st.button("👥", key="rail_clients", help="Client Directory", type="primary" if st.session_state.sidebar_tab == "clients" else "secondary", use_container_width=True):
+        if st.button("👥  Client Directory", key="rail_clients", type="primary" if st.session_state.sidebar_tab == "clients" else "secondary", use_container_width=True):
             st.session_state.sidebar_tab = "clients"
             st.session_state.active_app_tile = None
             st.rerun()
 
-        if st.button("📄", key="rail_drafts", help="Saved Drafts", type="primary" if st.session_state.sidebar_tab == "drafts" else "secondary", use_container_width=True):
+        if st.button("📄  Saved Drafts", key="rail_drafts", type="primary" if st.session_state.sidebar_tab == "drafts" else "secondary", use_container_width=True):
             st.session_state.sidebar_tab = "drafts"
             st.session_state.active_app_tile = None
             st.rerun()
 
-        if st.button("📋", key="rail_causelist", help="Daily Cause List", type="primary" if st.session_state.sidebar_tab == "causelist" else "secondary", use_container_width=True):
+        if st.button("📋  Daily Cause List", key="rail_causelist", type="primary" if st.session_state.sidebar_tab == "causelist" else "secondary", use_container_width=True):
             st.session_state.sidebar_tab = "causelist"
             st.session_state.active_app_tile = None
             st.rerun()
 
-        if st.button("💼", key="rail_briefs", help="Case Briefs", type="primary" if st.session_state.sidebar_tab == "briefs" else "secondary", use_container_width=True):
+        if st.button("💼  Case Briefs", key="rail_briefs", type="primary" if st.session_state.sidebar_tab == "briefs" else "secondary", use_container_width=True):
             st.session_state.sidebar_tab = "briefs"
             st.session_state.active_app_tile = None
             st.rerun()
 
-        if st.button("⚙️", key="rail_settings", help="Advocate Profile & Settings", type="primary" if st.session_state.sidebar_tab == "settings" else "secondary", use_container_width=True):
+        if st.button("⚙️  Profile & Settings", key="rail_settings", type="primary" if st.session_state.sidebar_tab == "settings" else "secondary", use_container_width=True):
             st.session_state.sidebar_tab = "settings"
             st.session_state.active_app_tile = None
             st.rerun()
 
-        st.markdown("<div style='height: 140px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 120px;'></div>", unsafe_allow_html=True)
 
-        if st.button("↪️", key="rail_logout", help="Logout", use_container_width=True):
+        if st.button("↪️  Logout", key="rail_logout", use_container_width=True):
             st.session_state.logged_in = False
             st.session_state.page = "main"
             st.rerun()
+
 
     with main_col:
         if st.session_state.sidebar_tab == "clients":
