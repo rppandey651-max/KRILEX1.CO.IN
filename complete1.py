@@ -1345,9 +1345,45 @@ else:
                 with col_right_form:
                     if active_form == "Caveat Application":
                         st.markdown("##### 👤 Caveator Details")
+                        if "caveator_count" not in st.session_state:
+                            st.session_state.caveator_count = 1
+                        
+                        caveators_list = []
                         with st.container(border=True):
-                            caveator_name_only = st.text_input("Caveator Full Name", placeholder="e.g. NAMAN PANDEY", key="f_caveator_name_only", value="" if c_name_mapped == "_____________________" else c_name_mapped).upper()
-                            caveator_address_only = st.text_input("Caveator Full Address & Attestation", placeholder="e.g. S/O ..., R/O ...", key="f_caveator_address_only", value="" if c_addr_mapped == "_____________________" else c_addr_mapped).upper()
+                            for c_idx in range(st.session_state.caveator_count):
+                                if st.session_state.caveator_count > 1:
+                                    st.markdown(f"**🔹 Caveator No. {c_idx+1}**")
+                                
+                                default_cname = "" if (c_idx > 0 or c_name_mapped == "_____________________") else c_name_mapped
+                                default_caddr = "" if (c_idx > 0 or c_addr_mapped == "_____________________") else c_addr_mapped
+                                
+                                c_name_i = st.text_input(
+                                    f"Caveator No. {c_idx+1} Full Name",
+                                    placeholder="e.g. NAMAN PANDEY",
+                                    value=st.session_state.get(f"persist_cav_name_{c_idx}", default_cname),
+                                    key=f"f_caveator_name_{c_idx}"
+                                ).upper()
+                                
+                                c_addr_i = st.text_input(
+                                    f"Caveator No. {c_idx+1} Full Address & Attestation",
+                                    placeholder="e.g. S/O ..., R/O ...",
+                                    value=st.session_state.get(f"persist_cav_addr_{c_idx}", default_caddr),
+                                    key=f"f_caveator_addr_{c_idx}"
+                                ).upper()
+                                
+                                st.session_state[f"persist_cav_name_{c_idx}"] = c_name_i
+                                st.session_state[f"persist_cav_addr_{c_idx}"] = c_addr_i
+                                
+                                if c_name_i and c_addr_i:
+                                    caveators_list.append((c_name_i, c_addr_i))
+                                
+                                if c_idx < st.session_state.caveator_count - 1:
+                                    st.markdown("---")
+                                    
+                            if st.button("➕ Add Another Caveator", key="add_caveator_btn", use_container_width=True):
+                                st.session_state.caveator_count += 1
+                                st.rerun()
+
                     else:
                         st.markdown("##### 👤 Petitioners / Applicants Stack")
                         with st.container(border=True):
@@ -1546,11 +1582,10 @@ else:
                 with form_action_col2:
                     back_to_hub_lower = st.button("🔙 Cancel & Back to Forum Hub", key="lower_form_back_to_hub_btn", use_container_width=True)
 
-                if submit_compile:
                     if not district_val:
                         st.sidebar.warning("⚠️ Processing Denied: Missing Forum Jurisdiction District.")
-                    elif active_form == "Caveat Application" and (not caveator_name_only or not caveator_address_only):
-                        st.sidebar.warning("⚠️ Processing Denied: Please fill both Caveator Name and Address fields.")
+                    elif active_form == "Caveat Application" and not caveators_list:
+                        st.sidebar.warning("⚠️ Processing Denied: Please fill at least one Caveator's Name and Address.")
                     elif active_form == "Caveat Application" and not exp_p_names_list:
                         st.sidebar.warning("⚠️ Processing Denied: Add at least one Expected Petitioner.")
                     elif active_form != "Caveat Application" and not p_names_list:
@@ -1564,18 +1599,22 @@ else:
                         st.session_state.persist_additional_paras = additional_paras_input
                         st.session_state.persist_crime_list = crime_details_list
 
-
                         if active_form == "Caveat Application":
                             st.session_state.persist_caveat_category = caveat_category
-                            st.session_state.persist_c_name = caveator_name_only
-                            st.session_state.persist_c_addr = caveator_address_only
+                            st.session_state.persist_c_name = caveators_list[0][0]
+                            st.session_state.persist_c_addr = caveators_list[0][1]
+                            if len(caveators_list) == 1:
+                                st.session_state.persist_caveators_formatted = f"{caveators_list[0][0]}, {caveators_list[0][1]}"
+                            else:
+                                st.session_state.persist_caveators_formatted = "\n".join(
+                                    [f"{i+1}. {name}, {addr}" for i, (name, addr) in enumerate(caveators_list)]
+                                )
                             st.session_state.persist_adv_name = "\n".join(adv_names_list)
                             st.session_state.persist_exp_p_formatted = "\n".join([f"{idx+1}. {name}" for idx, name in enumerate(exp_p_names_list)])
                             st.session_state.persist_r_formatted = "\n".join([f"{idx+1}. {name}" for idx, name in enumerate(r_names_list)])
                         else:
                             st.session_state.persist_p_formatted = "\n".join([f"{idx+1}. {name}" for idx, name in enumerate(p_names_list)])
                             st.session_state.persist_r_formatted = "\n".join([f"{idx+1}. {name}" for idx, name in enumerate(r_names_list)])
-
                         
                         st.session_state.canvas_sub_page = "preview"
                         st.rerun()
@@ -1644,8 +1683,9 @@ else:
 (Under Section 148-A C.P.C. read with Rule 5, Chapter XXII of High Court Rules)
 
 On behalf of:
-{c_name_mapped}, {c_addr_mapped}
+{st.session_state.get("persist_caveators_formatted", f"{c_name_mapped}, {c_addr_mapped}")}
 ---- Applicant / Caveator
+
 
 {misc_petition_line}
 (Under {provision_text})
@@ -1708,7 +1748,7 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                     "***********",
                     "Caveat Application No.",
                     "(Under Section 148-A",
-                    f"{c_name_mapped}",
+                    *[line for line in st.session_state.get("persist_caveators_formatted", c_name_mapped).split("\n") if line.strip()],
                     "On behalf of:",
                     "Proposed Misc. Petition",
                     "(Under ",
@@ -1824,7 +1864,7 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                         "Caveat Application No.",
                         "(Under Section 148-A",
                         "On behalf of:",
-                        f"{c_name_mapped}",
+                        *[line for line in st.session_state.get("persist_caveators_formatted", c_name_mapped).split("\n")if line.strip()],
                         "Proposed Misc. Petition",
                         "(Under ",
                         "VERSUS",
