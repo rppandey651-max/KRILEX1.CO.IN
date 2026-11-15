@@ -1707,10 +1707,10 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                     "FILED BY:",
                     "ADV.",
                     "Adv. Roll:",
+                    "Chamber:",
                     "CHAMBER",
                     "Mob:",
                     "COUNSEL FOR",
-                    "DATED:"
                 ]
 
                 import re
@@ -1809,10 +1809,10 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                         "FILED BY:",
                         "ADV.",
                         "Adv. Roll:",
+                        "Chamber:",
                         "CHAMBER",
                         "Mob:",
                         "COUNSEL FOR",
-                        "DATED:"
                     ]
 
                     for raw_line in safe_text.split("\n"):
