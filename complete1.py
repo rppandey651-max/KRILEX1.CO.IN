@@ -1687,8 +1687,9 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                     "***********",
                     "Caveat Application No.",
                     "(Under Section 148-A",
+                    f"{c_name_mapped}",
                     "On behalf of:",
-                    "In Re: Misc. Petition",
+                    "Proposed Misc. Petition",
                     "(Under ",
                     "VERSUS",
                     "PRAYER:",
@@ -1698,7 +1699,6 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
 
                 right_screen_lines = [
                     "DISTRICT",
-                    f"{c_name_mapped}",
                     "---- Applicant",
                     "---- Proposed Petitioner",
                     "---- Proposed Opposite Party",
@@ -1790,6 +1790,7 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                         "Caveat Application No.",
                         "(Under Section 148-A",
                         "On behalf of:",
+                        f"{c_name_mapped}",
                         "Proposed Misc. Petition",
                         "(Under ",
                         "VERSUS",
@@ -1800,7 +1801,6 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
 
                     right_keywords = [
                         "DISTRICT",
-                        f"{c_name_mapped}",
                         "---- Applicant",
                         "---- Proposed Petitioner",
                         "---- Proposed Opposite Party",
