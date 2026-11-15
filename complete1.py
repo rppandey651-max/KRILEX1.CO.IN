@@ -1723,7 +1723,7 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
 
                     content = f"<b>{stripped}</b>" if any(b_text in stripped for b_text in bold_lines) else stripped
 
-                    if any(c_text in stripped for c_text in center_screen_lines):
+                    if stripped == "IN" or any(c_text in stripped for c_text in center_screen_lines):
                         formatted_html_lines.append(f"<div style='text-align: center;'>{content}</div>")
                     elif any(r_text in stripped for r_text in right_screen_lines):
                         formatted_html_lines.append(f"<div style='text-align: right;'>{content}</div>")
@@ -1829,7 +1829,7 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                         else:
                             pdf.set_font("Times", style="", size=14)
 
-                        if any(c_key in stripped for c_key in center_keywords):
+                        if stripped == "IN" or any(c_key in stripped for c_key in center_keywords):
                             pdf.multi_cell(usable_w, 9, text=stripped, align="C")
                         elif any(r_key in stripped for r_key in right_keywords):
                             pdf.multi_cell(usable_w, 8, text=stripped, align="R")
