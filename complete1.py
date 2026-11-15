@@ -1679,20 +1679,58 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                 bold_lines = [
                     "IN THE HIGH COURT OF JUDICATURE AT ALLAHABAD",
                     "***********",
-                    caveat_title_line,
+                    caveat_title_line
+                ]
+
+                center_screen_lines = [
+                    "IN THE HIGH COURT",
+                    "***********",
+                    "Caveat Application No.",
+                    "(Under Section 148-A",
+                    "On behalf of:",
+                    "In Re: Misc. Petition",
+                    "(U/A ",
                     "VERSUS",
-                    "PRAYER:"
+                    "PRAYER:",
+                    "BEFORE THE HON'BLE",
+                    "APPLICATION FOR"
+                ]
+
+                right_screen_lines = [
+                    "DISTRICT",
+                    f"{c_name_mapped}",
+                    "---- Applicant",
+                    "---- Proposed Petitioner",
+                    "---- Proposed Opposite Party",
+                    "---- Petitioner(s)",
+                    "---- Respondent(s)",
+                    "FILED BY:",
+                    "ADV.",
+                    "Adv. Roll:",
+                    "CHAMBER",
+                    "Mob:",
+                    "COUNSEL FOR",
+                    "DATED:"
                 ]
 
                 formatted_html_lines = []
                 for line in final_document_string.split("\n"):
                     stripped = line.strip()
-                    if any(b_text in stripped for b_text in bold_lines) and stripped != "":
-                        formatted_html_lines.append(f"<b>{line}</b>")
-                    else:
-                        formatted_html_lines.append(line)
+                    if stripped == "":
+                        formatted_html_lines.append("<br>")
+                        continue
 
-                preview_body_html = "<br>".join(formatted_html_lines)
+                    content = f"<b>{stripped}</b>" if any(b_text in stripped for b_text in bold_lines) else stripped
+
+                    if any(c_text in stripped for c_text in center_screen_lines):
+                        formatted_html_lines.append(f"<div style='text-align: center;'>{content}</div>")
+                    elif any(r_text in stripped for r_text in right_screen_lines):
+                        formatted_html_lines.append(f"<div style='text-align: right;'>{content}</div>")
+                    else:
+                        formatted_html_lines.append(f"<div style='text-align: justify;'>{content}</div>")
+
+                preview_body_html = "".join(formatted_html_lines)
+
 
                 st.markdown("---")
                 st.markdown(
@@ -1743,13 +1781,15 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                         "On behalf of:",
                         "In Re: Misc. Petition",
                         "(U/A ",
-                        "DISTRICT",
                         "VERSUS",
+                        "PRAYER:",
                         "BEFORE THE HON'BLE",
                         "APPLICATION FOR"
                     ]
 
                     right_keywords = [
+                        "DISTRICT",
+                        f"{c_name_mapped}",
                         "---- Applicant",
                         "---- Proposed Petitioner",
                         "---- Proposed Opposite Party",
@@ -1763,6 +1803,7 @@ APPLICATION FOR {active_form.upper()} UNDER {provision_mapped}."""
                         "COUNSEL FOR",
                         "DATED:"
                     ]
+
 
                     for raw_line in safe_text.split("\n"):
                         stripped = raw_line.strip()
