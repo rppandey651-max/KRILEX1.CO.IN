@@ -1581,7 +1581,7 @@ else:
                 
                 with form_action_col2:
                     back_to_hub_lower = st.button("🔙 Cancel & Back to Forum Hub", key="lower_form_back_to_hub_btn", use_container_width=True)
-
+                if submit_compile:
                     if not district_val:
                         st.sidebar.warning("⚠️ Processing Denied: Missing Forum Jurisdiction District.")
                     elif active_form == "Caveat Application" and not caveators_list:
