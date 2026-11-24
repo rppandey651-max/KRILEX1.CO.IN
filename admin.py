@@ -79,7 +79,13 @@ else:
     st.markdown("---")
     
     # Segmented Operations Console Tabs
-    tab1, tab2, tab3 = st.tabs(["📊 System Metrics & Analytics", "👥 Lawyer Account Management", "📜 System Operation Logs"])
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "📊 System Metrics & Analytics",
+        "👥 Lawyer Account Management",
+        "📜 System Operation Logs",
+        "💬 Home Page Comments"
+    ])
+
     
     # --- TAB 1: System Performance Analytics & Statistics ---
     with tab1:
@@ -171,3 +177,27 @@ else:
         
         for log in log_data:
             st.code(log, language="bash")
+    # --- TAB 4: Home Page Comments & Reviews Moderation ---
+    with tab4:
+        st.subheader("💬 Manage Home Page Comments & Reviews")
+        st.write("View or delete user comments displayed on the Krilex landing page:")
+
+        comments = db.get_all_home_comments()
+
+        if not comments:
+            st.info("ℹ️ No comments found on the home page.")
+        else:
+            for item in comments:
+                with st.container(border=True):
+                    c_col1, c_col2 = st.columns([8.5, 1.5])
+                    with c_col1:
+                        st.markdown(f"**{item['name']}** ({item['role']}) — {item['rating']}")
+                        st.write(f"\"{item['comment']}\"")
+                    with c_col2:
+                        if st.button("🗑️ Delete", key=f"admin_del_comm_{item['id']}", type="primary", use_container_width=True):
+                            if db.delete_home_comment(item['id']):
+                                st.success("Comment deleted!")
+                                time.sleep(0.5)
+                                st.rerun()
+                            else:
+                                st.error("Failed to delete comment.")
